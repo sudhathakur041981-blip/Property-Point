@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="referrer" content="same-origin">
+    <title>Admin | Property Point</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="admin-page">
+    <header class="admin-header">
+        <a class="logo" href="index.html">
+            <img src="logo.svg" alt="">
+            <span class="brand-name">Property <span>Point</span></span>
+        </a>
+        <a class="admin-back-link" href="index.html">Back to website</a>
+    </header>
+
+    <main class="admin-main">
+        <section class="admin-login-panel" id="loginPanel">
+            <p class="small-title">STAFF ACCESS</p>
+            <h1>Admin sign in</h1>
+            <p class="admin-intro">Sign in to review property submissions and customer enquiries. Use the staff username and the configured admin token as your password.</p>
+            <form id="loginForm">
+                <label for="adminUsername">Username</label>
+                <input id="adminUsername" name="username" type="text" value="admin" autocomplete="username" required>
+                <label for="adminPassword">Password</label>
+                <input id="adminPassword" name="password" type="password" autocomplete="current-password" required>
+                <p class="admin-status" id="loginStatus" role="status" aria-live="polite"></p>
+                <button class="primary-btn" type="submit">
+                    <i class="fa-solid fa-lock"></i> Sign in
+                </button>
+            </form>
+        </section>
+
+        <section class="admin-dashboard" id="dashboard" hidden>
+            <div class="admin-dashboard-heading">
+                <div>
+                    <p class="small-title">PROPERTY POINT</p>
+                    <h1>Admin dashboard</h1>
+                    <p class="admin-intro">Signed in as <strong id="signedInUsername"></strong></p>
+                </div>
+                <button class="admin-secondary-button" id="logoutButton" type="button">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out
+                </button>
+            </div>
+
+            <div class="admin-tabs" role="tablist" aria-label="Admin sections">
+                <button class="admin-tab active" id="propertiesTab" type="button" role="tab" aria-selected="true" aria-controls="propertiesPanel" data-panel="propertiesPanel">
+                    Property submissions <span class="admin-count" id="pendingCount">0</span>
+                </button>
+                <button class="admin-tab" id="enquiriesTab" type="button" role="tab" aria-selected="false" aria-controls="enquiriesPanel" data-panel="enquiriesPanel">
+                    Enquiries <span class="admin-count" id="enquiryCount">0</span>
+                </button>
+            </div>
+
+            <p class="admin-status" id="dashboardStatus" role="status" aria-live="polite"></p>
+
+            <section class="admin-panel" id="propertiesPanel" role="tabpanel" aria-labelledby="propertiesTab">
+                <div class="admin-panel-heading">
+                    <div>
+                        <h2>Pending property submissions</h2>
+                        <p>Review details before making a new listing public.</p>
+                    </div>
+                    <button class="admin-secondary-button" id="refreshProperties" type="button">
+                        <i class="fa-solid fa-rotate"></i> Refresh
+                    </button>
+                </div>
+                <div class="admin-record-list" id="propertyList"></div>
+                <p class="admin-empty" id="propertiesEmpty" hidden>No property submissions are waiting for review.</p>
+            </section>
+
+            <section class="admin-panel" id="enquiriesPanel" role="tabpanel" aria-labelledby="enquiriesTab" hidden>
+                <div class="admin-panel-heading">
+                    <div>
+                        <h2>Customer enquiries</h2>
+                        <p>Contact customers using their provided details.</p>
+                    </div>
+                    <button class="admin-secondary-button" id="refreshEnquiries" type="button">
+                        <i class="fa-solid fa-rotate"></i> Refresh
+                    </button>
+                </div>
+                <div class="admin-record-list" id="enquiryList"></div>
+                <p class="admin-empty" id="enquiriesEmpty" hidden>No enquiries have been submitted yet.</p>
+            </section>
+        </section>
+    </main>
+
+    <script src="config.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

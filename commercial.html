@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore commercial offices, shops, warehouses and business spaces for sale or rent with Property Point.">
+    <title>Commercial Properties | Property Point</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="commercial-page">
+<header class="navbar">
+    <a class="logo" href="index.html">
+        <img src="logo.svg" alt="">
+        <span class="brand-name">Property <span>Point</span></span>
+    </a>
+    <nav>
+        <a href="index.html#home">Home</a>
+        <a href="index.html#properties">Properties</a>
+        <a href="commercial.html" aria-current="page">Commercial</a>
+        <a href="plots-land.html">Plots &amp; Land</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#services">Services</a>
+        <a href="#contact">Contact</a>
+        <a href="index.html?listProperty=1#home">List Commercial Property</a>
+    </nav>
+    <div class="nav-actions">
+        <button class="nav-fav-btn" onclick="openFavoritesModal()" title="View Saved Homes" type="button">
+            <i class="fa-solid fa-heart"></i>
+            <span class="fav-count" id="navFavCount">0</span>
+        </button>
+        <a class="post-btn commercial-post-btn" href="index.html?listProperty=1#home">List Commercial</a>
+    </div>
+    <div class="menu-icon" onclick="toggleMenu()">
+        <i class="fa-solid fa-bars"></i>
+    </div>
+</header>
+
+<main>
+    <section class="commercial-hero">
+        <div>
+            <p class="small-title">SPACE TO GROW YOUR BUSINESS</p>
+            <h1>Find your next<br><span>business address.</span></h1>
+            <p>Browse offices, retail spaces, showrooms and warehouses available to buy or rent across Mumbai and Navi Mumbai.</p>
+        </div>
+    </section>
+
+    <section class="properties-section commercial-listings" id="commercialProperties">
+        <div class="section-heading">
+            <div>
+                <p class="small-title">COMMERCIAL REAL ESTATE</p>
+                <h2>Spaces for every business</h2>
+            </div>
+            <span id="commercialCount" aria-live="polite">10 properties</span>
+        </div>
+
+        <div class="commercial-controls">
+            <div class="commercial-filters" role="group" aria-label="Filter commercial properties">
+                <button class="commercial-filter active" type="button" data-filter="all" aria-pressed="true">All spaces</button>
+                <button class="commercial-filter" type="button" data-filter="buy" aria-pressed="false">For sale</button>
+                <button class="commercial-filter" type="button" data-filter="rent" aria-pressed="false">For rent</button>
+            </div>
+            <input class="commercial-search" id="commercialSearch" type="search" placeholder="Search type or location" aria-label="Search by property type or location">
+        </div>
+        <p id="commercialFeedStatus" class="listing-feed-status" role="status" aria-live="polite"></p>
+
+        <div class="property-grid" id="commercialGrid">
+            <article class="property-card commercial-card" data-purpose="buy" data-search="office thane">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80" alt="Modern office for sale in Thane" loading="lazy">
+                    <span class="tag">FOR SALE</span>
+                    <button class="favorite" type="button" aria-label="Save Thane office" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Office</p>
+                    <h3>Grade-A Business Suite</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Wagle Estate, Thane</p>
+                    <div class="property-details"><span><i class="fa-solid fa-building"></i> 6 Cabins</span><span><i class="fa-solid fa-restroom"></i> 2 Baths</span><span><i class="fa-solid fa-ruler-combined"></i> 2,400 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹2.4 Cr</strong><button type="button" onclick="contactAgent('Grade-A Business Suite in Thane')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card commercial-card" data-purpose="rent" data-search="retail shop vashi">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=900&q=80" alt="Retail shop for rent in Vashi" loading="lazy">
+                    <span class="tag rent">FOR RENT</span>
+                    <button class="favorite" type="button" aria-label="Save Vashi retail shop" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Retail shop</p>
+                    <h3>High-Street Corner Shop</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Sector 17, Vashi</p>
+                    <div class="property-details"><span><i class="fa-solid fa-store"></i> Ground floor</span><span><i class="fa-solid fa-door-open"></i> Street access</span><span><i class="fa-solid fa-ruler-combined"></i> 920 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹85,000/mo</strong><button type="button" onclick="contactAgent('High-Street Corner Shop in Vashi')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card commercial-card" data-purpose="buy" data-search="warehouse panvel">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=900&q=80" alt="Warehouse for sale in Panvel" loading="lazy">
+                    <span class="tag">FOR SALE</span>
+                    <button class="favorite" type="button" aria-label="Save Panvel warehouse" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Warehouse</p>
+                    <h3>Logistics &amp; Distribution Hub</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Palaspe, Panvel</p>
+                    <div class="property-details"><span><i class="fa-solid fa-truck-ramp-box"></i> Loading dock</span><span><i class="fa-solid fa-truck"></i> 2 bays</span><span><i class="fa-solid fa-ruler-combined"></i> 8,500 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹5.8 Cr</strong><button type="button" onclick="contactAgent('Logistics Hub in Panvel')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card commercial-card" data-purpose="rent" data-search="office coworking andheri">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=900&q=80" alt="Managed office for rent in Andheri" loading="lazy">
+                    <span class="tag rent">FOR RENT</span>
+                    <button class="favorite" type="button" aria-label="Save Andheri managed office" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Managed office</p>
+                    <h3>Ready-to-Move Team Workspace</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Andheri East, Mumbai</p>
+                    <div class="property-details"><span><i class="fa-solid fa-users"></i> 32 seats</span><span><i class="fa-solid fa-wifi"></i> Furnished</span><span><i class="fa-solid fa-ruler-combined"></i> 1,800 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹1.65 Lakh/mo</strong><button type="button" onclick="contactAgent('Team Workspace in Andheri')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card commercial-card" data-purpose="buy" data-search="showroom nerul">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1604328698692-f76ea9498e76?auto=format&fit=crop&w=900&q=80" alt="Showroom for sale in Nerul" loading="lazy">
+                    <span class="tag">FOR SALE</span>
+                    <button class="favorite" type="button" aria-label="Save Nerul showroom" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Showroom</p>
+                    <h3>Double-Height Display Space</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Palm Beach Road, Nerul</p>
+                    <div class="property-details"><span><i class="fa-solid fa-layer-group"></i> 2 levels</span><span><i class="fa-solid fa-car"></i> 4 parking</span><span><i class="fa-solid fa-ruler-combined"></i> 2,100 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹3.1 Cr</strong><button type="button" onclick="contactAgent('Display Showroom in Nerul')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card commercial-card" data-purpose="rent" data-search="clinic kharghar">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=900&q=80" alt="Clinic space for rent in Kharghar" loading="lazy">
+                    <span class="tag rent">FOR RENT</span>
+                    <button class="favorite" type="button" aria-label="Save Kharghar clinic" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Clinic</p>
+                    <h3>Healthcare-Ready Suite</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Sector 12, Kharghar</p>
+                    <div class="property-details"><span><i class="fa-solid fa-door-open"></i> 4 rooms</span><span><i class="fa-solid fa-elevator"></i> Lift access</span><span><i class="fa-solid fa-ruler-combined"></i> 1,250 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹62,000/mo</strong><button type="button" onclick="contactAgent('Healthcare Suite in Kharghar')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card commercial-card" data-purpose="buy" data-search="office belapur">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=900&q=80" alt="Office floor for sale in Belapur" loading="lazy">
+                    <span class="tag">FOR SALE</span>
+                    <button class="favorite" type="button" aria-label="Save Belapur office floor" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Office floor</p>
+                    <h3>Open-Plan Corporate Floor</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> CBD Belapur</p>
+                    <div class="property-details"><span><i class="fa-solid fa-building"></i> 10th floor</span><span><i class="fa-solid fa-car"></i> 5 parking</span><span><i class="fa-solid fa-ruler-combined"></i> 3,600 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹4.2 Cr</strong><button type="button" onclick="contactAgent('Corporate Floor in Belapur')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card commercial-card" data-purpose="rent" data-search="restaurant seawoods">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80" alt="Restaurant space for rent in Seawoods" loading="lazy">
+                    <span class="tag rent">FOR RENT</span>
+                    <button class="favorite" type="button" aria-label="Save Seawoods restaurant" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Restaurant</p>
+                    <h3>Dining Space with Exhaust</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Seawoods Grand Central</p>
+                    <div class="property-details"><span><i class="fa-solid fa-chair"></i> 50 covers</span><span><i class="fa-solid fa-fire-burner"></i> Kitchen ready</span><span><i class="fa-solid fa-ruler-combined"></i> 1,600 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹1.4 Lakh/mo</strong><button type="button" onclick="contactAgent('Dining Space in Seawoods')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card commercial-card" data-purpose="buy" data-search="industrial gala rabale">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1565514020179-026b92b84bb6?auto=format&fit=crop&w=900&q=80" alt="Industrial unit for sale in Rabale" loading="lazy">
+                    <span class="tag">FOR SALE</span>
+                    <button class="favorite" type="button" aria-label="Save Rabale industrial unit" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Industrial unit</p>
+                    <h3>Light Manufacturing Gala</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> MIDC, Rabale</p>
+                    <div class="property-details"><span><i class="fa-solid fa-plug"></i> 30 kW power</span><span><i class="fa-solid fa-truck"></i> Goods lift</span><span><i class="fa-solid fa-ruler-combined"></i> 2,750 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹1.85 Cr</strong><button type="button" onclick="contactAgent('Manufacturing Gala in Rabale')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card commercial-card" data-purpose="rent" data-search="retail shop powai">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&w=900&q=80" alt="Retail boutique for rent in Powai" loading="lazy">
+                    <span class="tag rent">FOR RENT</span>
+                    <button class="favorite" type="button" aria-label="Save Powai boutique" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Retail boutique</p>
+                    <h3>Premium Mall-Facing Boutique</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Hiranandani Gardens, Powai</p>
+                    <div class="property-details"><span><i class="fa-solid fa-store"></i> Mall frontage</span><span><i class="fa-solid fa-snowflake"></i> Air-conditioned</span><span><i class="fa-solid fa-ruler-combined"></i> 680 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹95,000/mo</strong><button type="button" onclick="contactAgent('Premium Boutique in Powai')">Contact</button></div>
+                </div>
+            </article>
+        </div>
+        <p id="commercialEmpty" class="commercial-empty" role="status">No commercial spaces match your search.</p>
+    </section>
+
+    <section class="contact commercial-contact" id="contact">
+        <div>
+            <p class="small-title">NEED A BUSINESS SPACE?</p>
+            <h2>Let's find the right place for your <span>next move.</span></h2>
+            <p>Share your details and a Property Point commercial property expert will get in touch.</p>
+        </div>
+        <form onsubmit="submitContact(event)">
+            <input type="text" id="contactName" placeholder="Your Name" required>
+            <input type="tel" id="contactPhone" placeholder="Phone Number" required>
+            <input type="hidden" id="propertyInterest" value="">
+            <select id="contactRequirement">
+                <option value="Buy">I'm looking to Buy</option>
+                <option value="Rent">I'm looking to Rent</option>
+                <option value="Sell">I want to Sell</option>
+            </select>
+            <p class="form-status" data-form-status role="status" aria-live="polite"></p>
+            <button type="submit" class="primary-btn">Send Enquiry</button>
+        </form>
+    </section>
+</main>
+
+<footer>
+    <div class="footer-logo"><img src="logo.svg" alt=""><span class="brand-name">Property <span>Point</span></span></div>
+    <p>© 2026 Property Point. All rights reserved.</p>
+    <a href="admin.html">Admin sign in</a>
+    <div class="socials">
+        <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+        <a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+    </div>
+<!-- SAVED FAVORITES MODAL -->
+<div id="favoritesModal" class="modal">
+    <div class="modal-content fav-modal-content">
+        <span class="close-btn" onclick="closeFavoritesModal()">&times;</span>
+        <h2><i class="fa-solid fa-heart" style="color: #e63946;"></i> Saved Properties</h2>
+        <div id="favoritesListGrid" class="favorites-grid"></div>
+        <p id="emptyFavoritesMsg" class="empty-fav-msg" style="display: none; padding: 20px 0; color: var(--gray); text-align: center;">You have not saved any properties yet.</p>
+    </div>
+</div>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+<script src="commercial.js"></script>
+</body>
+</html>

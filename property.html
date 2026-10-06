@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Details | Property Point</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="property-detail-page">
+
+<!-- NAVBAR -->
+<header class="navbar">
+    <a class="logo" href="index.html">
+        <img src="logo.svg" alt="Property Point Logo">
+        <span class="brand-name">Property <span>Point</span></span>
+    </a>
+
+    <nav>
+        <a href="index.html#home">Home</a>
+        <a href="index.html#properties">Properties</a>
+        <a href="commercial.html">Commercial</a>
+        <a href="plots-land.html">Plots &amp; Land</a>
+        <a href="index.html#services">Services</a>
+        <a href="index.html#contact">Contact</a>
+    </nav>
+
+    <div class="nav-actions">
+        <button class="nav-fav-btn" onclick="openFavoritesModal()" title="View Saved Homes">
+            <i class="fa-solid fa-heart"></i>
+            <span class="fav-count" id="navFavCount">0</span>
+        </button>
+        <button class="post-btn" onclick="openModal()">
+            + List Property
+        </button>
+    </div>
+
+    <div class="menu-icon" onclick="toggleMenu()">
+        <i class="fa-solid fa-bars"></i>
+    </div>
+</header>
+
+<!-- LOADING & ERROR STATES -->
+<div id="detailLoading" class="detail-loading-state">
+    <div class="spinner"></div>
+    <p>Loading property details &amp; valuation insights...</p>
+</div>
+
+<div id="detailError" class="detail-error-state" style="display: none;">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    <h2>Property Not Found</h2>
+    <p id="detailErrorMessage">The property listing you are looking for may have been removed or does not exist.</p>
+    <a href="index.html#properties" class="primary-btn">Browse Other Properties</a>
+</div>
+
+<!-- MAIN DETAIL CONTAINER -->
+<main id="detailContainer" class="detail-container" style="display: none;">
+
+    <!-- BREADCRUMBS -->
+    <nav class="detail-breadcrumbs" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <i class="fa-solid fa-chevron-right"></i>
+        <a href="index.html#properties">Properties</a>
+        <i class="fa-solid fa-chevron-right"></i>
+        <span id="breadcrumbLocation">Location</span>
+        <i class="fa-solid fa-chevron-right"></i>
+        <span id="breadcrumbTitle" class="current">Title</span>
+    </nav>
+
+    <!-- HEADER TITLE & PRICING -->
+    <section class="detail-header-section">
+        <div class="detail-header-main">
+            <div class="detail-tags">
+                <span id="detailPurposeTag" class="tag">FOR SALE</span>
+                <span id="detailTypeTag" class="tag type-tag">Flat</span>
+                <span id="detailDealBadge" class="tag deal-tag">Fair Market Value</span>
+                <span id="detailVerifiedBadge" class="tag verified-tag"><i class="fa-solid fa-circle-check"></i> Verified</span>
+            </div>
+            <h1 id="detailTitle">Property Title</h1>
+            <p class="detail-location"><i class="fa-solid fa-location-dot"></i> <span id="detailLocationText">Kalyan, Thane</span></p>
+        </div>
+
+        <div class="detail-header-price">
+            <div class="price-box">
+                <span class="price-label">Price</span>
+                <strong id="detailPrice" class="detail-price-text">₹0</strong>
+                <span id="detailEmiHighlight" class="emi-highlight">EMI from ₹0/mo</span>
+            </div>
+            <button class="save-property-btn" id="detailSaveBtn" onclick="toggleDetailFavorite()">
+                <i class="fa-regular fa-heart"></i>
+                <span>Save Property</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- CONTENT GRID -->
+    <div class="detail-layout">
+
+        <!-- LEFT COLUMN: MEDIA, SPECS, ALGORITHMIC VALUATION, CALCULATORS -->
+        <div class="detail-main-col">
+
+            <!-- GALLERY -->
+            <div class="detail-gallery-card">
+                <div class="gallery-hero-wrapper">
+                    <img id="detailHeroImage" src="" alt="Property View">
+                </div>
+            </div>
+
+            <!-- KEY SPECIFICATIONS -->
+            <div class="detail-card specs-card">
+                <h3><i class="fa-solid fa-list-check"></i> Property Overview</h3>
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <i class="fa-solid fa-bed"></i>
+                        <div>
+                            <span>Bedrooms</span>
+                            <strong id="specBedrooms">2 BHK</strong>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fa-solid fa-bath"></i>
+                        <div>
+                            <span>Bathrooms</span>
+                            <strong id="specBathrooms">2 Baths</strong>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fa-solid fa-ruler-combined"></i>
+                        <div>
+                            <span>Super Built-up Area</span>
+                            <strong id="specArea">1,050 sq.ft</strong>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fa-solid fa-couch"></i>
+                        <div>
+                            <span>Furnishing</span>
+                            <strong id="specFurnishing">Semi-Furnished</strong>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fa-solid fa-calendar"></i>
+                        <div>
+                            <span>Property Age</span>
+                            <strong id="specAge">2 Years</strong>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <div>
+                            <span>RERA Status</span>
+                            <strong>Approved &amp; Cleared</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DESCRIPTION -->
+            <div class="detail-card">
+                <h3><i class="fa-solid fa-align-left"></i> Description</h3>
+                <p id="detailDescription" class="detail-desc-text">Property description here...</p>
+            </div>
+
+            <!-- AMENITIES -->
+            <div class="detail-card">
+                <h3><i class="fa-solid fa-gem"></i> Features &amp; Amenities</h3>
+                <div class="amenities-grid" id="detailAmenitiesList">
+                    <!-- Dynamic Amenities -->
+                </div>
+            </div>
+
+            <!-- ALGORITHM 1: AUTOMATED VALUATION MODEL (AVM) -->
+            <div class="detail-card avm-insight-card">
+                <div class="card-heading-badge">
+                    <h3><i class="fa-solid fa-chart-line"></i> AI Price Fairness &amp; Valuation (AVM)</h3>
+                    <span class="powered-by-tag">PropTech Algorithm Engine</span>
+                </div>
+                <p class="avm-intro">
+                    Our Automated Valuation Model compares this property against recent registered transactions, micro-market price indices, amenity weightings, and spatial trends in the Mumbai metropolitan area.
+                </p>
+
+                <div class="avm-metrics-grid">
+                    <div class="avm-stat-box">
+                        <span>AI Estimated Fair Value</span>
+                        <strong id="avmEstimatedPrice">₹0</strong>
+                    </div>
+                    <div class="avm-stat-box">
+                        <span>Fair Market Price Range</span>
+                        <strong id="avmFairRange">₹0 - ₹0</strong>
+                    </div>
+                    <div class="avm-stat-box">
+                        <span>Locality Benchmark Rate</span>
+                        <strong id="avmBenchmarkRate">₹0 / sq.ft</strong>
+                    </div>
+                </div>
+
+                <div class="avm-verdict-box" id="avmVerdictBox">
+                    <div class="verdict-icon"><i class="fa-solid fa-circle-check"></i></div>
+                    <div>
+                        <strong id="avmVerdictTitle">Fair Market Deal</strong>
+                        <p id="avmVerdictDesc">This listing is priced accurately within the standard transaction band for this locality.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ALGORITHM 6: MORTGAGE / EMI CALCULATOR -->
+            <div class="detail-card calculator-card">
+                <div class="card-heading-badge">
+                    <h3><i class="fa-solid fa-calculator"></i> Mortgage &amp; EMI Estimator</h3>
+                    <span class="powered-by-tag">Amortization Engine</span>
+                </div>
+                <p class="calc-intro">Customize your down payment and loan tenure to calculate monthly installments.</p>
+
+                <div class="calc-inputs-grid">
+                    <div class="calc-slider-group">
+                        <div class="slider-header">
+                            <label for="downPaymentSlider">Down Payment</label>
+                            <span id="downPaymentValueText">20% (₹0)</span>
+                        </div>
+                        <input type="range" id="downPaymentSlider" min="10" max="50" step="5" value="20">
+                    </div>
+
+                    <div class="calc-slider-group">
+                        <div class="slider-header">
+                            <label for="tenureSlider">Loan Tenure</label>
+                            <span id="tenureValueText">20 Years</span>
+                        </div>
+                        <input type="range" id="tenureSlider" min="5" max="30" step="1" value="20">
+                    </div>
+
+                    <div class="calc-slider-group">
+                        <div class="slider-header">
+                            <label for="interestRateInput">Interest Rate (% p.a.)</label>
+                        </div>
+                        <input type="number" id="interestRateInput" min="6.0" max="15.0" step="0.1" value="8.5" class="calc-number-input">
+                    </div>
+                </div>
+
+                <div class="emi-result-banner">
+                    <div class="emi-main-figure">
+                        <span>Estimated Monthly Installment</span>
+                        <strong id="calculatedMonthlyEmi">₹0 / month</strong>
+                    </div>
+                    <div class="emi-breakdown">
+                        <div>
+                            <span>Principal Loan:</span>
+                            <strong id="breakdownPrincipal">₹0</strong>
+                        </div>
+                        <div>
+                            <span>Total Interest:</span>
+                            <strong id="breakdownInterest">₹0</strong>
+                        </div>
+                        <div>
+                            <span>Total Payable:</span>
+                            <strong id="breakdownTotalPayable">₹0</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ALGORITHM 2: SIMILAR PROPERTIES RECOMMENDER -->
+            <div class="detail-card similar-properties-card">
+                <div class="card-heading-badge">
+                    <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Similar Properties You May Like</h3>
+                    <span class="powered-by-tag">Vector Similarity Engine</span>
+                </div>
+                <p class="similar-intro">Algorithmic recommendations matched by budget, location, area, and bedroom layout.</p>
+                <div class="property-grid similar-grid" id="similarPropertiesGrid">
+                    <!-- Dynamic Similar Cards -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: STICKY CONTACT / AGENT ENQUIRY CARD -->
+        <aside class="detail-sidebar">
+            <div class="sticky-agent-card">
+                <div class="agent-profile">
+                    <div class="agent-avatar">
+                        <i class="fa-solid fa-user-tie"></i>
+                    </div>
+                    <div>
+                        <h4>Property Point Desk</h4>
+                        <span class="agent-role"><i class="fa-solid fa-circle-check"></i> Certified Advisory Partner</span>
+                        <div class="agent-rating">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star-half-stroke"></i>
+                            <span>4.9 (120+ verified deals)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="agent-actions">
+                    <a href="tel:+919820011223" class="agent-call-btn">
+                        <i class="fa-solid fa-phone"></i> Call Agent
+                    </a>
+                    <a href="https://wa.me/919820011223?text=Hi%2C%20I%20am%20interested%20in%20Property%20Point%20Listing" target="_blank" rel="noopener noreferrer" class="agent-whatsapp-btn">
+                        <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                    </a>
+                </div>
+
+                <hr class="agent-divider">
+
+                <form class="detail-enquiry-form" id="detailEnquiryForm" onsubmit="submitDetailEnquiry(event)">
+                    <h4>Book a Site Visit / Enquiry</h4>
+                    <p class="form-subtext">Our local area specialist will arrange an in-person or virtual walkthrough.</p>
+
+                    <label for="detailClientName">Your Name</label>
+                    <input type="text" id="detailClientName" placeholder="e.g. Ramesh Sharma" required>
+
+                    <label for="detailClientPhone">Mobile Number</label>
+                    <input type="tel" id="detailClientPhone" placeholder="e.g. 9876543210" required>
+
+                    <label for="detailClientReq">I want to</label>
+                    <select id="detailClientReq">
+                        <option value="Buy">Buy this Property</option>
+                        <option value="Rent">Rent this Property</option>
+                    </select>
+
+                    <button type="submit" class="primary-btn submit-lead-btn">
+                        <i class="fa-solid fa-paper-plane"></i> Send Booking Enquiry
+                    </button>
+                    <p class="form-status-msg" id="detailFormStatus" role="status" aria-live="polite"></p>
+                </form>
+            </div>
+        </aside>
+
+    </div>
+
+</main>
+
+<!-- LIST PROPERTY MODAL (Reused across site) -->
+<div id="propertyModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2>List Your Property</h2>
+        <form id="propertyForm" onsubmit="listProperty(event)">
+            <input type="text" id="propertyOwnerName" placeholder="Your Name" required>
+            <input type="tel" id="propertyOwnerPhone" placeholder="Mobile Number" required>
+            <select id="propertyPurpose" required>
+                <option value="Sell">For Sale</option>
+                <option value="Rent">For Rent</option>
+            </select>
+            <input type="text" id="propertyLocation" placeholder="Location (e.g. Kharghar, Navi Mumbai)" required>
+            <input type="text" id="propertyTitle" placeholder="Property Title (e.g. 2 BHK Spacious Flat)" required>
+            <select id="propertyType" required>
+                <option value="Flat">Flat</option>
+                <option value="Builder Floor">Builder Floor</option>
+                <option value="Independent Villa">Independent Villa</option>
+                <option value="Commercial Space">Commercial Space</option>
+                <option value="Plot">Plot</option>
+            </select>
+            <input type="text" id="propertyBedrooms" placeholder="Bedrooms (e.g. 2 BHK)">
+            <input type="text" id="propertyBathrooms" placeholder="Bathrooms (e.g. 2 Baths)">
+            <input type="number" id="propertyArea" placeholder="Area in sq.ft" required>
+            <input type="number" id="propertyPrice" placeholder="Expected Price in ₹" required>
+            <textarea id="propertyDescription" placeholder="Description of your property"></textarea>
+            <button type="submit" class="submit-btn">Submit Property</button>
+            <p data-form-status role="status" aria-live="polite"></p>
+        </form>
+    </div>
+</div>
+
+<!-- SAVED FAVORITES MODAL -->
+<div id="favoritesModal" class="modal">
+    <div class="modal-content fav-modal-content">
+        <span class="close-btn" onclick="closeFavoritesModal()">&times;</span>
+        <h2><i class="fa-solid fa-heart" style="color: #e63946;"></i> Saved Properties</h2>
+        <div id="favoritesListGrid" class="favorites-grid">
+            <!-- Dynamic favorites -->
+        </div>
+        <p id="emptyFavoritesMsg" class="empty-fav-msg" style="display: none;">You have not saved any properties yet.</p>
+    </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="config.js"></script>
+<script src="script.js"></script>
+<script>
+    let currentProperty = null;
+
+    async function loadPropertyDetails() {
+        const params = new URLSearchParams(window.location.search);
+        const propertyId = params.get("id");
+
+        if (!propertyId) {
+            showError("No property ID specified in URL.");
+            return;
+        }
+
+        try {
+            const data = await requestApi(`/api/properties/${propertyId}`);
+            currentProperty = data;
+            renderPropertyDetails(data);
+            loadSimilarProperties(propertyId);
+        } catch (err) {
+            showError(err.message || "Failed to load property details.");
+        }
+    }
+
+    function showError(message) {
+        document.getElementById("detailLoading").style.display = "none";
+        document.getElementById("detailError").style.display = "block";
+        document.getElementById("detailErrorMessage").textContent = message;
+    }
+
+    function renderPropertyDetails(p) {
+        document.getElementById("detailLoading").style.display = "none";
+        document.getElementById("detailContainer").style.display = "block";
+
+        document.title = `${p.title} | Property Point`;
+        document.getElementById("breadcrumbLocation").textContent = p.location;
+        document.getElementById("breadcrumbTitle").textContent = p.title;
+
+        // Tags
+        const isRent = p.purpose.toLowerCase() === "rent";
+        const purposeTag = document.getElementById("detailPurposeTag");
+        purposeTag.textContent = isRent ? "FOR RENT" : "FOR SALE";
+        purposeTag.className = isRent ? "tag rent" : "tag";
+
+        document.getElementById("detailTypeTag").textContent = p.propertyType;
+        document.getElementById("detailTitle").textContent = p.title;
+        document.getElementById("detailLocationText").textContent = p.location;
+
+        // Pricing
+        const formattedPrice = formatPropertyPrice(p.expectedPrice);
+        document.getElementById("detailPrice").textContent = `${formattedPrice}${isRent ? "/mo" : ""}`;
+
+        // Hero Image
+        const fallbackImg = "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80";
+        document.getElementById("detailHeroImage").src = p.imageUrl || fallbackImg;
+
+        // Specs
+        document.getElementById("specBedrooms").textContent = p.bedrooms || "N/A";
+        document.getElementById("specBathrooms").textContent = p.bathrooms || "N/A";
+        document.getElementById("specArea").textContent = `${Number(p.areaSqFt).toLocaleString("en-IN")} sq.ft`;
+        document.getElementById("specFurnishing").textContent = p.furnishing || "Semi-Furnished";
+        document.getElementById("specAge").textContent = `${p.ageYears || 2} Years`;
+        document.getElementById("detailDescription").textContent = p.description || "A well-maintained property in an established neighborhood with convenient access to schools, transit, and shopping.";
+
+        // Amenities
+        const amenitiesContainer = document.getElementById("detailAmenitiesList");
+        amenitiesContainer.innerHTML = "";
+        const amenities = (p.amenities && p.amenities.length > 0)
+            ? p.amenities
+            : ["Lift", "Covered Parking", "Security", "Power Backup", "Gym", "Water Supply"];
+
+        const iconMap = {
+            "lift": "fa-elevator",
+            "gym": "fa-dumbbell",
+            "covered parking": "fa-square-parking",
+            "parking": "fa-car",
+            "security": "fa-shield-halved",
+            "power backup": "fa-bolt",
+            "swimming pool": "fa-person-swimming",
+            "clubhouse": "fa-champagne-glasses",
+            "park": "fa-tree",
+        };
+
+        amenities.forEach(a => {
+            const badge = document.createElement("div");
+            badge.className = "amenity-badge";
+            const iconClass = iconMap[a.toLowerCase()] || "fa-check";
+            badge.innerHTML = `<i class="fa-solid ${iconClass}"></i><span>${a}</span>`;
+            amenitiesContainer.appendChild(badge);
+        });
+
+        // AVM Insights
+        if (p.avm) {
+            document.getElementById("avmEstimatedPrice").textContent = formatPropertyPrice(p.avm.estimatedPrice);
+            document.getElementById("avmFairRange").textContent = `${formatPropertyPrice(p.avm.fairRangeMin)} – ${formatPropertyPrice(p.avm.fairRangeMax)}`;
+            document.getElementById("avmBenchmarkRate").textContent = `₹${Number(p.avm.benchmarkRatePerSqFt).toLocaleString("en-IN")} / sq.ft`;
+
+            const dealTag = document.getElementById("detailDealBadge");
+            dealTag.textContent = p.avm.badge || "Fair Market Value";
+            if (p.avm.dealRating === "underpriced") {
+                dealTag.className = "tag deal-tag great-deal";
+                document.getElementById("avmVerdictTitle").textContent = "High Value / Attractive Deal 🔥";
+                document.getElementById("avmVerdictDesc").textContent = "This property is priced below the micro-market benchmark, representing strong value for buyers or investors.";
+            } else if (p.avm.dealRating === "overpriced") {
+                dealTag.className = "tag deal-tag premium-deal";
+                document.getElementById("avmVerdictTitle").textContent = "Premium / High Spec Unit";
+                document.getElementById("avmVerdictDesc").textContent = "This unit commands a premium rate due to superior furnishing, high floor, or luxury amenities.";
+            } else {
+                dealTag.className = "tag deal-tag fair-deal";
+            }
+        }
+
+        // Initialize Calculator with Property Price
+        initEmiCalculator(p.expectedPrice);
+        updateDetailFavoriteState(p.id);
+    }
+
+    function initEmiCalculator(price) {
+        const downSlider = document.getElementById("downPaymentSlider");
+        const tenureSlider = document.getElementById("tenureSlider");
+        const rateInput = document.getElementById("interestRateInput");
+
+        function recalculate() {
+            const downPct = Number(downSlider.value);
+            const tenureYears = Number(tenureSlider.value);
+            const rate = Number(rateInput.value) || 8.5;
+
+            const downAmount = price * (downPct / 100);
+            document.getElementById("downPaymentValueText").textContent = `${downPct}% (${formatPropertyPrice(downAmount)})`;
+            document.getElementById("tenureValueText").textContent = `${tenureYears} Years (${tenureYears * 12} mo)`;
+
+            const principal = price - downAmount;
+            const monthlyRate = (rate / 100) / 12;
+            const totalMonths = tenureYears * 12;
+
+            let emi = 0;
+            if (monthlyRate === 0) {
+                emi = principal / totalMonths;
+            } else {
+                const comp = Math.pow(1 + monthlyRate, totalMonths);
+                emi = principal * monthlyRate * (comp / (comp - 1));
+            }
+
+            const totalPayable = emi * totalMonths;
+            const totalInterest = totalPayable - principal;
+
+            const formattedEmi = formatPropertyPrice(emi);
+            document.getElementById("calculatedMonthlyEmi").textContent = `${formattedEmi} / month`;
+            document.getElementById("detailEmiHighlight").textContent = `EMI from ${formattedEmi}/mo`;
+            document.getElementById("breakdownPrincipal").textContent = formatPropertyPrice(principal);
+            document.getElementById("breakdownInterest").textContent = formatPropertyPrice(totalInterest);
+            document.getElementById("breakdownTotalPayable").textContent = formatPropertyPrice(totalPayable);
+        }
+
+        downSlider.addEventListener("input", recalculate);
+        tenureSlider.addEventListener("input", recalculate);
+        rateInput.addEventListener("input", recalculate);
+        recalculate();
+    }
+
+    async function loadSimilarProperties(id) {
+        try {
+            const res = await requestApi(`/api/properties/${id}/similar`);
+            const grid = document.getElementById("similarPropertiesGrid");
+            grid.innerHTML = "";
+            if (!res.items || res.items.length === 0) {
+                grid.innerHTML = "<p>No other similar properties currently listed in this category.</p>";
+                return;
+            }
+
+            res.items.forEach(item => {
+                const card = document.createElement("div");
+                card.className = "property-card";
+                const fallback = "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=600&q=80";
+                card.innerHTML = `
+                    <div class="property-image">
+                        <img src="${item.imageUrl || fallback}" alt="${item.title}" loading="lazy">
+                        <span class="tag ${item.purpose.toLowerCase() === 'rent' ? 'rent' : ''}">FOR ${item.purpose.toUpperCase()}</span>
+                        <span class="similarity-badge" title="Algorithmic Match Score">${Math.round((item.similarityScore || 0.85) * 100)}% Match</span>
+                    </div>
+                    <div class="property-info">
+                        <p class="property-type">${item.propertyType}</p>
+                        <h3><a href="property.html?id=${item.id}">${item.title}</a></h3>
+                        <p class="location"><i class="fa-solid fa-location-dot"></i> ${item.location}</p>
+                        <div class="property-details">
+                            ${item.bedrooms ? `<span><i class="fa-solid fa-bed"></i> ${item.bedrooms}</span>` : ''}
+                            ${item.areaSqFt ? `<span><i class="fa-solid fa-ruler-combined"></i> ${Number(item.areaSqFt).toLocaleString('en-IN')} sq.ft</span>` : ''}
+                        </div>
+                        <div class="property-bottom">
+                            <strong>${formatPropertyPrice(item.expectedPrice)}${item.purpose.toLowerCase() === 'rent' ? '/mo' : ''}</strong>
+                            <a href="property.html?id=${item.id}" class="view-detail-link">View &rarr;</a>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        } catch {
+            // Ignore similarity errors gracefully
+        }
+    }
+
+    async function submitDetailEnquiry(event) {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const name = document.getElementById("detailClientName").value.trim();
+        const phone = document.getElementById("detailClientPhone").value.trim();
+        const requirement = document.getElementById("detailClientReq").value;
+        const statusEl = document.getElementById("detailFormStatus");
+        const btn = form.querySelector(".submit-lead-btn");
+
+        statusEl.textContent = "";
+        btn.disabled = true;
+
+        try {
+            const data = await postApi("/api/enquiries", {
+                name,
+                phone,
+                requirement,
+                propertyInterest: `${currentProperty?.title || 'Listing'} in ${currentProperty?.location || ''}`
+            });
+            form.reset();
+            statusEl.textContent = `Thanks ${name}! Your booking enquiry has been received and routed to our specialist team.`;
+            statusEl.style.color = "#10b981";
+        } catch (err) {
+            statusEl.textContent = err.message || "Failed to submit enquiry. Please try again.";
+            statusEl.style.color = "#ef4444";
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    function toggleDetailFavorite() {
+        if (!currentProperty) return;
+        const btn = document.getElementById("detailSaveBtn");
+        const isFav = toggleStoredFavorite(currentProperty.id);
+        updateDetailFavButton(btn, isFav);
+        updateNavFavCount();
+    }
+
+    function updateDetailFavoriteState(id) {
+        const btn = document.getElementById("detailSaveBtn");
+        const favs = getStoredFavorites();
+        updateDetailFavButton(btn, favs.includes(id));
+        updateNavFavCount();
+    }
+
+    function updateDetailFavButton(btn, isFav) {
+        const icon = btn.querySelector("i");
+        const label = btn.querySelector("span");
+        if (isFav) {
+            icon.className = "fa-solid fa-heart";
+            icon.style.color = "#e63946";
+            label.textContent = "Saved to Favorites";
+            btn.classList.add("active");
+        } else {
+            icon.className = "fa-regular fa-heart";
+            icon.style.color = "";
+            label.textContent = "Save Property";
+            btn.classList.remove("active");
+        }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+        loadPropertyDetails();
+        updateNavFavCount();
+    });
+</script>
+
+</body>
+</html>

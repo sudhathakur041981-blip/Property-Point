@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Property Point | Buy, Sell &amp; Rent Properties</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo.svg" type="image/svg+xml">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+    <div class="logo">
+        <img src="logo.svg" alt="">
+        <span class="brand-name">Property <span>Point</span></span>
+    </div>
+
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#properties">Properties</a>
+        <a href="commercial.html">Commercial</a>
+        <a href="plots-land.html">Plots &amp; Land</a>
+        <a href="#valuation">AI Valuation</a>
+        <a href="#mortgage">EMI Calculator</a>
+        <a href="#projects">Projects</a>
+        <a href="#services">Services</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+    </nav>
+
+    <div class="nav-actions">
+        <button class="nav-fav-btn" onclick="openFavoritesModal()" title="View Saved Homes" type="button">
+            <i class="fa-solid fa-heart"></i>
+            <span class="fav-count" id="navFavCount">0</span>
+        </button>
+        <button class="post-btn" onclick="openModal()" type="button">
+            + List Property
+        </button>
+    </div>
+
+    <div class="menu-icon" onclick="toggleMenu()">
+        <i class="fa-solid fa-bars"></i>
+    </div>
+</header>
+
+
+<!-- HERO -->
+<section class="hero" id="home">
+
+    <div class="hero-content">
+
+        <p class="small-title">
+            YOUR DREAM HOME STARTS HERE
+        </p>
+
+        <h1>
+            Find a place you'll<br>
+            <span>love to live.</span>
+        </h1>
+
+        <p class="hero-text">
+            Buy, sell or rent your perfect property with
+            Property Point. Trusted property solutions made simple.
+        </p>
+
+        <!-- SEARCH BOX -->
+        <div class="search-box">
+
+            <div class="search-field">
+                <label>Looking for</label>
+                <select id="purpose">
+                    <option value="all">Buy / Rent</option>
+                    <option value="buy">Buy</option>
+                    <option value="rent">Rent</option>
+                </select>
+            </div>
+
+            <div class="search-field">
+                <label>Location</label>
+                <input
+                    type="text"
+                    id="location"
+                    placeholder="Kalyan, Thane, Nerul..."
+                >
+            </div>
+
+            <button onclick="searchProperties()" class="search-btn">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                Search
+            </button>
+
+        </div>
+
+    </div>
+</section>
+
+
+<!-- STATS -->
+<section class="stats">
+
+    <div>
+        <strong>5,000+</strong>
+        <span>Properties</span>
+    </div>
+
+    <div>
+        <strong>2,500+</strong>
+        <span>Happy Clients</span>
+    </div>
+
+    <div>
+        <strong>150+</strong>
+        <span>Expert Agents</span>
+    </div>
+
+    <div>
+        <strong>15+</strong>
+        <span>Cities</span>
+    </div>
+
+</section>
+
+
+<!-- PROPERTIES -->
+<section class="properties-section" id="properties">
+
+    <div class="section-heading">
+
+        <div>
+            <p class="small-title">EXPLORE PROPERTIES</p>
+
+            <h2>
+                Featured Properties
+            </h2>
+        </div>
+
+        <button class="view-btn" onclick="showAllProperties()">
+            View All
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+
+    </div>
+
+    <div class="listing-layout">
+        <aside class="property-filters" aria-label="Filter properties">
+            <div class="filter-heading">
+                <h3><i class="fa-solid fa-sliders"></i> Filters</h3>
+                <button type="button" class="filter-reset" onclick="resetPropertyFilters()">Reset</button>
+            </div>
+
+            <label class="filter-control" for="budgetFilter">
+                Budget
+                <select id="budgetFilter">
+                    <option value="any">Any budget</option>
+                    <option value="under">Under ₹50 Lakh</option>
+                    <option value="middle">₹50 Lakh – ₹1 Cr</option>
+                    <option value="upper">₹1 Cr – ₹2 Cr</option>
+                    <option value="over">₹2 Cr and above</option>
+                </select>
+            </label>
+
+            <fieldset class="filter-control type-filter">
+                <legend>Type of property</legend>
+                <label><input type="checkbox" name="propertyType" value="Flats"> Flats</label>
+                <label><input type="checkbox" name="propertyType" value="Builder Floor"> Builder Floor</label>
+                <label><input type="checkbox" name="propertyType" value="Independent Villa"> Independent Villa</label>
+                <small>Choose one or more types</small>
+            </fieldset>
+
+            <label class="filter-control" for="bedroomFilter">
+                Number of bedrooms
+                <select id="bedroomFilter">
+                    <option value="any">Any bedrooms</option>
+                    <option value="1">1 bedroom</option>
+                    <option value="2">2 bedrooms</option>
+                    <option value="3">3 bedrooms</option>
+                    <option value="4">4 bedrooms</option>
+                    <option value="5">5+ bedrooms</option>
+                </select>
+            </label>
+
+            <label class="filter-control" for="areaFilter">
+                Area
+                <select id="areaFilter">
+                    <option value="any">Any area</option>
+                    <option value="under-1000">Under 1,000 sq.ft</option>
+                    <option value="1000-1500">1,000–1,500 sq.ft</option>
+                    <option value="1500-2000">1,500–2,000 sq.ft</option>
+                    <option value="over-2000">Over 2,000 sq.ft</option>
+                </select>
+            </label>
+        </aside>
+
+        <div class="listing-results">
+            <div class="property-grid" id="propertyGrid">
+        <!-- CURATED STARTER LISTINGS (Hydrated dynamically by /api/properties) -->
+        <div class="property-card" data-id="prop-kalyan-01" data-purpose="buy" data-type="Flats" data-location="kalyan west">
+            <div class="property-image">
+                <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=900&q=80" alt="Kalyan Flat" loading="lazy">
+                <span class="tag">FOR SALE</span>
+                <span class="tag deal-tag great-deal">🔥 8% Below Market Rate</span>
+                <button class="favorite" onclick="favoriteProperty(this, 'prop-kalyan-01')" type="button"><i class="fa-regular fa-heart"></i></button>
+            </div>
+            <div class="property-info">
+                <p class="property-type">Flats</p>
+                <h3><a href="property.html?id=prop-kalyan-01">2 BHK Family Flat with Balcony</a></h3>
+                <p class="location"><i class="fa-solid fa-location-dot"></i> Kalyan West</p>
+                <div class="property-details"><span><i class="fa-solid fa-bed"></i> 2 Beds</span><span><i class="fa-solid fa-bath"></i> 2 Baths</span><span><i class="fa-solid fa-ruler-combined"></i> 1,050 sq.ft</span></div>
+                <div class="property-bottom">
+                    <strong>₹62 Lakh</strong>
+                    <div style="display:flex;gap:8px;">
+                        <a href="property.html?id=prop-kalyan-01" class="view-detail-link" style="padding:7px 12px;border:1px solid var(--border);border-radius:6px;">Details</a>
+                        <button onclick="contactAgent('2 BHK Family Flat in Kalyan West')" type="button">Contact</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="property-card" data-id="prop-thane-01" data-purpose="buy" data-type="Flats" data-location="thane west">
+            <div class="property-image">
+                <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=900&q=80" alt="Thane Highrise" loading="lazy">
+                <span class="tag">FOR SALE</span>
+                <span class="tag deal-tag fair-deal">Fair Market Value</span>
+                <button class="favorite" onclick="favoriteProperty(this, 'prop-thane-01')" type="button"><i class="fa-regular fa-heart"></i></button>
+            </div>
+            <div class="property-info">
+                <p class="property-type">Flats</p>
+                <h3><a href="property.html?id=prop-thane-01">2 BHK Lakeview Highrise Suite</a></h3>
+                <p class="location"><i class="fa-solid fa-location-dot"></i> Thane West</p>
+                <div class="property-details"><span><i class="fa-solid fa-bed"></i> 2 Beds</span><span><i class="fa-solid fa-bath"></i> 2 Baths</span><span><i class="fa-solid fa-ruler-combined"></i> 980 sq.ft</span></div>
+                <div class="property-bottom">
+                    <strong>₹1.15 Cr</strong>
+                    <div style="display:flex;gap:8px;">
+                        <a href="property.html?id=prop-thane-01" class="view-detail-link" style="padding:7px 12px;border:1px solid var(--border);border-radius:6px;">Details</a>
+                        <button onclick="contactAgent('2 BHK Lakeview Suite in Thane West')" type="button">Contact</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="property-card" data-id="prop-nerul-01" data-purpose="buy" data-type="Flats" data-location="nerul, navi mumbai">
+            <div class="property-image">
+                <img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=900&q=80" alt="Nerul Apartment" loading="lazy">
+                <span class="tag">FOR SALE</span>
+                <span class="tag deal-tag great-deal">🔥 6% Below Market Rate</span>
+                <button class="favorite" onclick="favoriteProperty(this, 'prop-nerul-01')" type="button"><i class="fa-regular fa-heart"></i></button>
+            </div>
+            <div class="property-info">
+                <p class="property-type">Flats</p>
+                <h3><a href="property.html?id=prop-nerul-01">3 BHK Premium Palm Beach Apartment</a></h3>
+                <p class="location"><i class="fa-solid fa-location-dot"></i> Nerul, Navi Mumbai</p>
+                <div class="property-details"><span><i class="fa-solid fa-bed"></i> 3 Beds</span><span><i class="fa-solid fa-bath"></i> 3 Baths</span><span><i class="fa-solid fa-ruler-combined"></i> 1,600 sq.ft</span></div>
+                <div class="property-bottom">
+                    <strong>₹2.1 Cr</strong>
+                    <div style="display:flex;gap:8px;">
+                        <a href="property.html?id=prop-nerul-01" class="view-detail-link" style="padding:7px 12px;border:1px solid var(--border);border-radius:6px;">Details</a>
+                        <button onclick="contactAgent('3 BHK Palm Beach Apartment in Nerul')" type="button">Contact</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="property-card" data-id="prop-kharghar-01" data-purpose="buy" data-type="Flats" data-location="kharghar, navi mumbai">
+            <div class="property-image">
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80" alt="Kharghar Home" loading="lazy">
+                <span class="tag">FOR SALE</span>
+                <span class="tag deal-tag fair-deal">Fair Market Value</span>
+                <button class="favorite" onclick="favoriteProperty(this, 'prop-kharghar-01')" type="button"><i class="fa-regular fa-heart"></i></button>
+            </div>
+            <div class="property-info">
+                <p class="property-type">Flats</p>
+                <h3><a href="property.html?id=prop-kharghar-01">2 BHK Sunlit Golf Course Flat</a></h3>
+                <p class="location"><i class="fa-solid fa-location-dot"></i> Kharghar, Navi Mumbai</p>
+                <div class="property-details"><span><i class="fa-solid fa-bed"></i> 2 Beds</span><span><i class="fa-solid fa-bath"></i> 2 Baths</span><span><i class="fa-solid fa-ruler-combined"></i> 1,120 sq.ft</span></div>
+                <div class="property-bottom">
+                    <strong>₹85 Lakh</strong>
+                    <div style="display:flex;gap:8px;">
+                        <a href="property.html?id=prop-kharghar-01" class="view-detail-link" style="padding:7px 12px;border:1px solid var(--border);border-radius:6px;">Details</a>
+                        <button onclick="contactAgent('2 BHK Golf Course Flat in Kharghar')" type="button">Contact</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="property-card" data-id="prop-panvel-01" data-purpose="buy" data-type="Independent Villa" data-location="panvel">
+            <div class="property-image">
+                <img src="https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=900&q=80" alt="Panvel Villa" loading="lazy">
+                <span class="tag">FOR SALE</span>
+                <span class="tag deal-tag great-deal">🔥 10% Below Market Rate</span>
+                <button class="favorite" onclick="favoriteProperty(this, 'prop-panvel-01')" type="button"><i class="fa-regular fa-heart"></i></button>
+            </div>
+            <div class="property-info">
+                <p class="property-type">Independent Villa</p>
+                <h3><a href="property.html?id=prop-panvel-01">3 BHK Modern Courtyard Villa</a></h3>
+                <p class="location"><i class="fa-solid fa-location-dot"></i> Panvel</p>
+                <div class="property-details"><span><i class="fa-solid fa-bed"></i> 3 Beds</span><span><i class="fa-solid fa-bath"></i> 3 Baths</span><span><i class="fa-solid fa-ruler-combined"></i> 2,200 sq.ft</span></div>
+                <div class="property-bottom">
+                    <strong>₹1.65 Cr</strong>
+                    <div style="display:flex;gap:8px;">
+                        <a href="property.html?id=prop-panvel-01" class="view-detail-link" style="padding:7px 12px;border:1px solid var(--border);border-radius:6px;">Details</a>
+                        <button onclick="contactAgent('3 BHK Modern Villa in Panvel')" type="button">Contact</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="property-card" data-id="prop-kalyan-03" data-purpose="rent" data-type="Flats" data-location="kalyan">
+            <div class="property-image">
+                <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80" alt="Kalyan Rental" loading="lazy">
+                <span class="tag rent">FOR RENT</span>
+                <span class="tag deal-tag fair-deal">Fair Market Rent</span>
+                <button class="favorite" onclick="favoriteProperty(this, 'prop-kalyan-03')" type="button"><i class="fa-regular fa-heart"></i></button>
+            </div>
+            <div class="property-info">
+                <p class="property-type">Flats</p>
+                <h3><a href="property.html?id=prop-kalyan-03">1 BHK Compact Urban Home</a></h3>
+                <p class="location"><i class="fa-solid fa-location-dot"></i> Kalyan</p>
+                <div class="property-details"><span><i class="fa-solid fa-bed"></i> 1 Bed</span><span><i class="fa-solid fa-bath"></i> 1 Bath</span><span><i class="fa-solid fa-ruler-combined"></i> 620 sq.ft</span></div>
+                <div class="property-bottom">
+                    <strong>₹18,000/mo</strong>
+                    <div style="display:flex;gap:8px;">
+                        <a href="property.html?id=prop-kalyan-03" class="view-detail-link" style="padding:7px 12px;border:1px solid var(--border);border-radius:6px;">Details</a>
+                        <button onclick="contactAgent('1 BHK Compact Home in Kalyan')" type="button">Contact</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </div>
+
+            <p id="noResults" class="no-results">
+                No properties found. Try another search.
+            </p>
+            <p id="propertyFeedStatus" class="listing-feed-status" role="status" aria-live="polite"></p>
+        </div>
+    </div>
+
+</section>
+
+
+<!-- PROJECTS -->
+<section class="projects-section" id="projects">
+    <div class="section-heading">
+        <div>
+            <p class="small-title">OUR DEVELOPMENTS</p>
+            <h2>Projects</h2>
+        </div>
+    </div>
+    <p class="project-note">Sample project names and locations</p>
+
+    <div class="project-groups">
+        <div class="project-group">
+            <div class="project-group-heading">
+                <h3>Upcoming Projects</h3>
+                <span>6 projects</span>
+            </div>
+            <div class="project-list">
+                <article class="project-item">
+                    <span class="project-number">01</span>
+                    <div><h4>Greenfield Residences</h4><p><i class="fa-solid fa-location-dot"></i> Kalyan West</p></div>
+                </article>
+                <article class="project-item">
+                    <span class="project-number">02</span>
+                    <div><h4>Lakeview Enclave</h4><p><i class="fa-solid fa-location-dot"></i> Thane East</p></div>
+                </article>
+                <article class="project-item">
+                    <span class="project-number">03</span>
+                    <div><h4>Coastal Grove Homes</h4><p><i class="fa-solid fa-location-dot"></i> Nerul</p></div>
+                </article>
+                <article class="project-item">
+                    <span class="project-number">04</span>
+                    <div><h4>Vashi Garden Villas</h4><p><i class="fa-solid fa-location-dot"></i> Vashi</p></div>
+                </article>
+                <article class="project-item">
+                    <span class="project-number">05</span>
+                    <div><h4>Urban Courtyard</h4><p><i class="fa-solid fa-location-dot"></i> Kurla West</p></div>
+                </article>
+                <article class="project-item">
+                    <span class="project-number">06</span>
+                    <div><h4>Harbor View Homes</h4><p><i class="fa-solid fa-location-dot"></i> Dadar</p></div>
+                </article>
+            </div>
+        </div>
+
+        <div class="project-group completed-projects">
+            <div class="project-group-heading">
+                <h3>Completed Projects</h3>
+                <span>4 projects</span>
+            </div>
+            <div class="project-list">
+                <article class="project-item">
+                    <span class="project-number">01</span>
+                    <div><h4>Maple Court Homes</h4><p><i class="fa-solid fa-location-dot"></i> Panvel</p></div>
+                </article>
+                <article class="project-item">
+                    <span class="project-number">02</span>
+                    <div><h4>Hillside Gardens</h4><p><i class="fa-solid fa-location-dot"></i> Kharghar</p></div>
+                </article>
+                <article class="project-item">
+                    <span class="project-number">03</span>
+                    <div><h4>Seawoods Park Homes</h4><p><i class="fa-solid fa-location-dot"></i> Seawoods</p></div>
+                </article>
+                <article class="project-item">
+                    <span class="project-number">04</span>
+                    <div><h4>Central Avenue Flat</h4><p><i class="fa-solid fa-location-dot"></i> Dadar East</p></div>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- SERVICES -->
+<section class="services" id="services">
+
+    <div class="section-heading center">
+
+        <div>
+            <p class="small-title">WHAT WE DO</p>
+
+            <h2>
+                Our Services
+            </h2>
+        </div>
+
+    </div>
+
+    <div class="service-grid">
+
+        <div class="service-card">
+            <div class="service-icon">
+                <i class="fa-solid fa-house"></i>
+            </div>
+
+            <h3>Buy Property</h3>
+
+            <p>
+                Find verified properties that match
+                your budget and lifestyle.
+            </p>
+        </div>
+
+
+        <div class="service-card">
+            <div class="service-icon">
+                <i class="fa-solid fa-key"></i>
+            </div>
+
+            <h3>Rent Property</h3>
+
+            <p>
+                Discover houses available for rent.
+            </p>
+        </div>
+
+
+        <div class="service-card">
+            <div class="service-icon">
+                <i class="fa-solid fa-building"></i>
+            </div>
+
+            <h3>Sell Property</h3>
+
+            <p>
+                List your property and connect with
+                genuine buyers.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ALGORITHM 1: AI PROPERTY VALUATION (AVM) -->
+<section class="valuation-section" id="valuation">
+    <div class="section-heading center">
+        <div>
+            <p class="small-title">PROPTECH VALUATION ENGINE</p>
+            <h2>AI Instant Property Valuation</h2>
+            <p class="section-subtitle">Estimate fair market value for any residential or commercial unit based on Mumbai MMR micro-market benchmarks, property type, and amenity weights.</p>
+        </div>
+    </div>
+
+    <div class="valuation-widget-card">
+        <form id="homeValuationForm" onsubmit="calculateHomeValuation(event)" class="valuation-form">
+            <div class="val-input-group">
+                <label for="valLocation">Location</label>
+                <select id="valLocation">
+                    <option value="Kalyan West">Kalyan West</option>
+                    <option value="Kalyan East">Kalyan East</option>
+                    <option value="Thane West">Thane West</option>
+                    <option value="Nerul">Nerul, Navi Mumbai</option>
+                    <option value="Kharghar">Kharghar, Navi Mumbai</option>
+                    <option value="Panvel">Panvel</option>
+                    <option value="Vashi">Vashi, Navi Mumbai</option>
+                    <option value="Dadar">Dadar, Mumbai</option>
+                </select>
+            </div>
+
+            <div class="val-input-group">
+                <label for="valType">Property Type</label>
+                <select id="valType">
+                    <option value="Flat">Flat / Apartment</option>
+                    <option value="Builder Floor">Builder Floor</option>
+                    <option value="Independent Villa">Independent Villa</option>
+                    <option value="Commercial Space">Commercial Space</option>
+                    <option value="Plot">Plot / Land</option>
+                </select>
+            </div>
+
+            <div class="val-input-group">
+                <label for="valArea">Area (sq.ft)</label>
+                <input type="number" id="valArea" value="1050" min="100" max="50000" step="50" required>
+            </div>
+
+            <div class="val-input-group">
+                <label for="valPurpose">Valuation For</label>
+                <select id="valPurpose">
+                    <option value="Sell">Outright Sale Value</option>
+                    <option value="Rent">Monthly Rental Value</option>
+                </select>
+            </div>
+
+            <button type="submit" class="primary-btn val-btn">
+                <i class="fa-solid fa-chart-line"></i> Calculate Value
+            </button>
+        </form>
+
+        <div id="valuationResultBox" class="val-result-box" style="display: none;">
+            <div class="val-figure">
+                <span>Estimated Market Value</span>
+                <strong id="valEstimatedDisplay">₹0</strong>
+            </div>
+            <div class="val-details-strip">
+                <div>
+                    <span>Fair Range:</span>
+                    <strong id="valRangeDisplay">₹0 - ₹0</strong>
+                </div>
+                <div>
+                    <span>Benchmark Rate:</span>
+                    <strong id="valRateDisplay">₹0 / sq.ft</strong>
+                </div>
+                <div>
+                    <span>Market Trend:</span>
+                    <strong style="color: #10b981;"><i class="fa-solid fa-arrow-trend-up"></i> Steady Growth</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ALGORITHM 6: SMART MORTGAGE & EMI CALCULATOR -->
+<section class="calculator-section" id="mortgage">
+    <div class="section-heading center">
+        <div>
+            <p class="small-title">FINANCIAL PLANNING</p>
+            <h2>Mortgage &amp; EMI Calculator</h2>
+            <p class="section-subtitle">Plan your home purchase with exact bank monthly amortization schedules and down payment calculations.</p>
+        </div>
+    </div>
+
+    <div class="home-calc-card">
+        <div class="home-calc-grid">
+            <div class="home-calc-controls">
+                <div class="calc-field">
+                    <div class="calc-label-row">
+                        <label for="homeLoanPrice">Property Price</label>
+                        <span id="homeLoanPriceDisplay">₹75 Lakh</span>
+                    </div>
+                    <input type="range" id="homeLoanPrice" min="2000000" max="50000000" step="500000" value="7500000">
+                </div>
+
+                <div class="calc-field">
+                    <div class="calc-label-row">
+                        <label for="homeLoanDownPct">Down Payment (%)</label>
+                        <span id="homeLoanDownDisplay">20% (₹15 Lakh)</span>
+                    </div>
+                    <input type="range" id="homeLoanDownPct" min="10" max="50" step="5" value="20">
+                </div>
+
+                <div class="calc-field">
+                    <div class="calc-label-row">
+                        <label for="homeLoanTenure">Tenure</label>
+                        <span id="homeLoanTenureDisplay">20 Years</span>
+                    </div>
+                    <input type="range" id="homeLoanTenure" min="5" max="30" step="1" value="20">
+                </div>
+
+                <div class="calc-field">
+                    <div class="calc-label-row">
+                        <label for="homeLoanRate">Interest Rate (% p.a.)</label>
+                    </div>
+                    <input type="number" id="homeLoanRate" value="8.5" min="6.0" max="15.0" step="0.1" class="calc-number-input">
+                </div>
+            </div>
+
+            <div class="home-calc-summary">
+                <div class="summary-top">
+                    <span>Your Monthly EMI</span>
+                    <strong id="homeCalculatedEmi">₹52,069 / mo</strong>
+                </div>
+                <div class="summary-breakdown">
+                    <div class="breakdown-row">
+                        <span>Principal Loan</span>
+                        <strong id="homePrincipalLoan">₹60,00,000</strong>
+                    </div>
+                    <div class="breakdown-row">
+                        <span>Total Interest Payable</span>
+                        <strong id="homeTotalInterest">₹64,96,560</strong>
+                    </div>
+                    <div class="breakdown-row total">
+                        <span>Total Amount Payable</span>
+                        <strong id="homeTotalPayable">₹1,24,96,560</strong>
+                    </div>
+                </div>
+                <a href="#properties" class="primary-btn search-in-budget-btn">Find Homes In This Budget</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ABOUT -->
+<section class="about" id="about">
+
+    <div class="about-image">
+
+        <img
+            src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1000&q=80"
+            alt="Property Point Office"
+        >
+
+    </div>
+
+    <div class="about-content">
+
+        <p class="small-title">
+            ABOUT PREOPERTYPOINT
+        </p>
+
+        <h2>
+            Making real estate
+            <span>simple & transparent.</span>
+        </h2>
+
+        <p>
+            Property Point is a modern real-estate brokerage platform
+            helping people find, buy, sell and rent properties
+            with confidence.
+        </p>
+
+        <div class="check-list">
+
+            <p>
+                <i class="fa-solid fa-circle-check"></i>
+                Verified property listings
+            </p>
+
+            <p>
+                <i class="fa-solid fa-circle-check"></i>
+                Experienced property agents
+            </p>
+
+            <p>
+                <i class="fa-solid fa-circle-check"></i>
+                Transparent pricing
+            </p>
+
+            <p>
+                <i class="fa-solid fa-circle-check"></i>
+                End-to-end assistance
+            </p>
+
+        </div>
+
+        <button class="primary-btn" onclick="openModal()">
+            Talk to an Agent
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+
+    <div>
+        <p class="small-title">
+            NEED HELP?
+        </p>
+
+        <h2>
+            Let's find your
+            <span>dream home.</span>
+        </h2>
+
+        <p>
+            Tell us what you're looking for and one
+            of our property experts will contact you.
+        </p>
+    </div>
+
+    <form onsubmit="submitContact(event)">
+
+        <input
+            type="text"
+            id="contactName"
+            placeholder="Your Name"
+            required
+        >
+
+        <input
+            type="tel"
+            id="contactPhone"
+            placeholder="Phone Number"
+            required
+        >
+
+        <input type="hidden" id="propertyInterest" value="">
+
+        <select id="contactRequirement">
+            <option value="Buy">I'm looking to Buy</option>
+            <option value="Rent">I'm looking to Rent</option>
+            <option value="Sell">I want to Sell</option>
+        </select>
+
+        <p class="form-status" data-form-status role="status" aria-live="polite"></p>
+
+        <button type="submit" class="primary-btn">
+            Send Enquiry
+        </button>
+
+    </form>
+
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+
+    <div class="footer-logo">
+        <img src="logo.svg" alt="">
+        <span class="brand-name">Property <span>Point</span></span>
+    </div>
+
+    <p>
+        © 2026 Property Point. All rights reserved.
+    </p>
+
+    <a href="admin.html">Admin sign in</a>
+
+    <div class="socials">
+        <a href="#"><i class="fa-brands fa-facebook"></i></a>
+        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+        <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+    </div>
+
+</footer>
+
+
+<!-- LIST PROPERTY MODAL -->
+<div class="modal" id="propertyModal">
+
+    <div class="modal-content">
+
+        <button class="close" onclick="closeModal()">
+            &times;
+        </button>
+
+        <h2>List Your Property</h2>
+
+        <p>
+            Fill in your details and our agent will contact you.
+        </p>
+
+        <form onsubmit="listProperty(event)">
+
+            <input
+                id="propertyOwnerName"
+                type="text"
+                placeholder="Your Name"
+                required
+            >
+
+            <input
+                id="propertyOwnerPhone"
+                type="tel"
+                placeholder="Phone Number"
+                required
+            >
+
+            <select id="propertyPurpose" required>
+                <option value="">Property Purpose</option>
+                <option value="Sell">Sell</option>
+                <option value="Rent">Rent</option>
+            </select>
+
+            <input
+                id="propertyLocation"
+                type="text"
+                placeholder="Property Location"
+                required
+            >
+
+            <input
+                id="propertyTitle"
+                type="text"
+                minlength="4"
+                maxlength="120"
+                placeholder="Listing Title (e.g. Sunny 2 BHK Apartment)"
+                required
+            >
+
+            <textarea
+                id="propertyDescription"
+                maxlength="1200"
+                rows="3"
+                placeholder="Property description (optional)"
+            ></textarea>
+
+            <div class="detail-grid">
+                <select id="propertyType" required>
+                    <option value="">Property Type</option>
+                    <option value="Flat">Flat</option>
+                    <option value="Builder Floor">Builder Floor</option>
+                    <option value="Independent Villa">Independent Villa</option>
+                    <option value="Commercial Space">Commercial Space</option>
+                    <option value="Plot">Plot</option>
+                </select>
+
+                <select id="propertyBedrooms">
+                    <option value="">Bedrooms</option>
+                    <option value="1 BHK">1 BHK</option>
+                    <option value="2 BHK">2 BHK</option>
+                    <option value="3 BHK">3 BHK</option>
+                    <option value="4 BHK">4 BHK</option>
+                    <option value="5 BHK+">5 BHK+</option>
+                </select>
+
+                <select id="propertyBathrooms">
+                    <option value="">Bathrooms</option>
+                    <option value="1 Bath">1 Bath</option>
+                    <option value="2 Baths">2 Baths</option>
+                    <option value="3 Baths">3 Baths</option>
+                    <option value="4 Baths">4 Baths</option>
+                    <option value="5 Baths+">5 Baths+</option>
+                </select>
+
+                <input
+                    id="propertyArea"
+                    type="number"
+                    min="1"
+                    step="10"
+                    placeholder="Area (sq.ft)"
+                    required
+                >
+            </div>
+
+            <input
+                id="propertyPrice"
+                type="number"
+                min="0.01"
+                step="0.01"
+                placeholder="Expected price / monthly rent (₹)"
+                required
+            >
+
+            <p class="form-status" data-form-status role="status" aria-live="polite"></p>
+
+            <button class="primary-btn" type="submit">
+                Submit Property
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- SAVED FAVORITES MODAL -->
+<div id="favoritesModal" class="modal">
+    <div class="modal-content fav-modal-content">
+        <span class="close-btn" onclick="closeFavoritesModal()">&times;</span>
+        <h2><i class="fa-solid fa-heart" style="color: #e63946;"></i> Saved Properties</h2>
+        <div id="favoritesListGrid" class="favorites-grid">
+            <!-- Dynamic favorites rendered via JS -->
+        </div>
+        <p id="emptyFavoritesMsg" class="empty-fav-msg" style="display: none; padding: 20px 0; color: var(--gray); text-align: center;">You have not saved any properties yet. Click the heart icon on any property to save it.</p>
+    </div>
+</div>
+
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>

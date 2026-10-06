@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Find residential, agricultural and commercial plots for sale or rent with Property Point.">
+    <title>Plots &amp; Land | Property Point</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="commercial-page">
+<header class="navbar">
+    <a class="logo" href="index.html">
+        <img src="logo.svg" alt="">
+        <span class="brand-name">Property <span>Point</span></span>
+    </a>
+    <nav>
+        <a href="index.html#home">Home</a>
+        <a href="index.html#properties">Properties</a>
+        <a href="commercial.html">Commercial</a>
+        <a href="plots-land.html" aria-current="page">Plots &amp; Land</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#services">Services</a>
+        <a href="#contact">Contact</a>
+        <a href="index.html?listProperty=1#home">List Your Land</a>
+    </nav>
+    <div class="nav-actions">
+        <button class="nav-fav-btn" onclick="openFavoritesModal()" title="View Saved Homes" type="button">
+            <i class="fa-solid fa-heart"></i>
+            <span class="fav-count" id="navFavCount">0</span>
+        </button>
+        <a class="post-btn commercial-post-btn" href="index.html?listProperty=1#home">List Land</a>
+    </div>
+    <div class="menu-icon" onclick="toggleMenu()">
+        <i class="fa-solid fa-bars"></i>
+    </div>
+</header>
+
+<main>
+    <section class="commercial-hero plots-hero">
+        <div>
+            <p class="small-title">ROOM TO BUILD YOUR FUTURE</p>
+            <h1>Find the right<br><span>plot of land.</span></h1>
+            <p>Discover residential plots, farmland and development land available for sale or rent across Mumbai and Navi Mumbai.</p>
+        </div>
+    </section>
+
+    <section class="properties-section commercial-listings" id="landProperties">
+        <div class="section-heading">
+            <div>
+                <p class="small-title">PLOTS &amp; LAND</p>
+                <h2>Land for your next idea</h2>
+            </div>
+            <span id="landCount" aria-live="polite">10 listings</span>
+        </div>
+
+        <div class="commercial-controls">
+            <div class="commercial-filters" role="group" aria-label="Filter land listings">
+                <button class="commercial-filter land-filter active" type="button" data-filter="all" aria-pressed="true">All land</button>
+                <button class="commercial-filter land-filter" type="button" data-filter="buy" aria-pressed="false">For sale</button>
+                <button class="commercial-filter land-filter" type="button" data-filter="rent" aria-pressed="false">For rent</button>
+            </div>
+            <input class="commercial-search" id="landSearch" type="search" placeholder="Search land type or location" aria-label="Search by land type or location">
+        </div>
+        <p id="landFeedStatus" class="listing-feed-status" role="status" aria-live="polite"></p>
+
+        <div class="property-grid" id="landGrid">
+            <article class="property-card land-card" data-purpose="buy" data-search="residential plot panvel">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1548941489-3e64750ebbaa?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Residential plot for sale in Panvel" loading="lazy">
+                    <span class="tag">FOR SALE</span>
+                    <button class="favorite" type="button" aria-label="Save Panvel residential plot" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Residential plot</p>
+                    <h3>Corner Plot near New Panvel</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> New Panvel</p>
+                    <div class="property-details"><span><i class="fa-solid fa-draw-polygon"></i> NA plot</span><span><i class="fa-solid fa-road"></i> Road access</span><span><i class="fa-solid fa-ruler-combined"></i> 2,000 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹82 Lakh</strong><button type="button" onclick="contactAgent('Corner Plot in New Panvel')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card land-card" data-purpose="rent" data-search="agricultural farmland karjat">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1574105760522-d4c21db56628?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Farmland for rent in Karjat" loading="lazy">
+                    <span class="tag rent">FOR RENT</span>
+                    <button class="favorite" type="button" aria-label="Save Karjat farmland" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Agricultural land</p>
+                    <h3>Leasable Farm Parcel</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Karjat</p>
+                    <div class="property-details"><span><i class="fa-solid fa-seedling"></i> Farmland</span><span><i class="fa-solid fa-water"></i> Water access</span><span><i class="fa-solid fa-ruler-combined"></i> 1 acre</span></div>
+                    <div class="property-bottom"><strong>₹18,000/mo</strong><button type="button" onclick="contactAgent('Leasable Farm Parcel in Karjat')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card land-card" data-purpose="buy" data-search="residential plot kharghar">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1548941489-4a9f8b8230b0?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Residential plot for sale in Kharghar" loading="lazy">
+                    <span class="tag">FOR SALE</span>
+                    <button class="favorite" type="button" aria-label="Save Kharghar residential plot" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Residential plot</p>
+                    <h3>Garden District Buildable Plot</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Sector 35, Kharghar</p>
+                    <div class="property-details"><span><i class="fa-solid fa-file-circle-check"></i> Clear title</span><span><i class="fa-solid fa-road"></i> 12 m road</span><span><i class="fa-solid fa-ruler-combined"></i> 1,800 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹1.15 Cr</strong><button type="button" onclick="contactAgent('Garden District Plot in Kharghar')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card land-card" data-purpose="rent" data-search="commercial land turbhe">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1600015622654-eb95cef6ec9a?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Commercial land beside a dirt access road in Turbhe" loading="lazy">
+                    <span class="tag rent">FOR RENT</span>
+                    <button class="favorite" type="button" aria-label="Save Turbhe commercial land" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Commercial land</p>
+                    <h3>Open Yard for Business Use</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Turbhe MIDC</p>
+                    <div class="property-details"><span><i class="fa-solid fa-truck"></i> Vehicle access</span><span><i class="fa-solid fa-shield-halved"></i> Gated site</span><span><i class="fa-solid fa-ruler-combined"></i> 10,000 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹1.2 Lakh/mo</strong><button type="button" onclick="contactAgent('Business Yard in Turbhe')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card land-card" data-purpose="buy" data-search="agricultural farmland alibaug">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1769501378889-614f19c8a1b4?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Agricultural land for sale in Alibaug" loading="lazy">
+                    <span class="tag">FOR SALE</span>
+                    <button class="favorite" type="button" aria-label="Save Alibaug farmland" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Agricultural land</p>
+                    <h3>Coastal Orchard Estate</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Nagaon, Alibaug</p>
+                    <div class="property-details"><span><i class="fa-solid fa-tree"></i> Orchard land</span><span><i class="fa-solid fa-road"></i> Village access</span><span><i class="fa-solid fa-ruler-combined"></i> 2 acres</span></div>
+                    <div class="property-bottom"><strong>₹1.6 Cr</strong><button type="button" onclick="contactAgent('Coastal Orchard Estate in Alibaug')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card land-card" data-purpose="rent" data-search="residential plot ulwe">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1685767943274-ffb3a82f58a5?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Residential plot beside a field access road in Ulwe" loading="lazy">
+                    <span class="tag rent">FOR RENT</span>
+                    <button class="favorite" type="button" aria-label="Save Ulwe residential plot" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Residential plot</p>
+                    <h3>Temporary Use Plot near Airport</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Sector 19, Ulwe</p>
+                    <div class="property-details"><span><i class="fa-solid fa-file-circle-check"></i> Leasable parcel</span><span><i class="fa-solid fa-road"></i> Corner access</span><span><i class="fa-solid fa-ruler-combined"></i> 3,000 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹35,000/mo</strong><button type="button" onclick="contactAgent('Ulwe Airport District Plot')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card land-card" data-purpose="buy" data-search="commercial plot bhiwandi">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1787773894172-50005b81be16?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Commercial plot for sale in Bhiwandi" loading="lazy">
+                    <span class="tag">FOR SALE</span>
+                    <button class="favorite" type="button" aria-label="Save Bhiwandi commercial plot" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Commercial plot</p>
+                    <h3>Warehouse Development Site</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Anjurphata, Bhiwandi</p>
+                    <div class="property-details"><span><i class="fa-solid fa-industry"></i> Industrial zone</span><span><i class="fa-solid fa-truck"></i> Highway nearby</span><span><i class="fa-solid fa-ruler-combined"></i> 12,000 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹2.8 Cr</strong><button type="button" onclick="contactAgent('Warehouse Site in Bhiwandi')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card land-card" data-purpose="rent" data-search="agricultural land karjat">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1759663379495-66f35522b9ed?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Agricultural land for rent in Karjat" loading="lazy">
+                    <span class="tag rent">FOR RENT</span>
+                    <button class="favorite" type="button" aria-label="Save Karjat agricultural parcel" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Agricultural land</p>
+                    <h3>Seasonal Cultivation Parcel</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Neral Road, Karjat</p>
+                    <div class="property-details"><span><i class="fa-solid fa-seedling"></i> Cultivation use</span><span><i class="fa-solid fa-water"></i> Well nearby</span><span><i class="fa-solid fa-ruler-combined"></i> 1.5 acres</span></div>
+                    <div class="property-bottom"><strong>₹24,000/mo</strong><button type="button" onclick="contactAgent('Seasonal Cultivation Parcel in Karjat')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card land-card" data-purpose="buy" data-search="residential plot virar">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1684775622591-cb57271f141e?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Residential plot beside a dirt road in Virar" loading="lazy">
+                    <span class="tag">FOR SALE</span>
+                    <button class="favorite" type="button" aria-label="Save Virar residential plot" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Residential plot</p>
+                    <h3>Family Home Building Plot</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Bolinj, Virar West</p>
+                    <div class="property-details"><span><i class="fa-solid fa-house"></i> Residential zone</span><span><i class="fa-solid fa-road"></i> Paved access</span><span><i class="fa-solid fa-ruler-combined"></i> 1,500 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹48 Lakh</strong><button type="button" onclick="contactAgent('Family Home Plot in Virar')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card land-card" data-purpose="rent" data-search="commercial open land vashi">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1561140247-23fc8e754af6?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Open commercial land for rent in Vashi" loading="lazy">
+                    <span class="tag rent">FOR RENT</span>
+                    <button class="favorite" type="button" aria-label="Save Vashi open commercial land" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Open commercial land</p>
+                    <h3>Flexible Storage Yard</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Sector 19, Vashi</p>
+                    <div class="property-details"><span><i class="fa-solid fa-boxes-stacked"></i> Open storage</span><span><i class="fa-solid fa-truck"></i> Truck access</span><span><i class="fa-solid fa-ruler-combined"></i> 5,000 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹75,000/mo</strong><button type="button" onclick="contactAgent('Flexible Storage Yard in Vashi')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card land-card" data-purpose="buy" data-search="residential plot dombivli">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1615149596814-f1c1364eb077?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Residential plot for sale in Dombivli" loading="lazy">
+                    <span class="tag">FOR SALE</span>
+                    <button class="favorite" type="button" aria-label="Save Dombivli residential plot" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Residential plot</p>
+                    <h3>East Dombivli Home Site</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Dombivli East</p>
+                    <div class="property-details"><span><i class="fa-solid fa-house"></i> Residential zone</span><span><i class="fa-solid fa-road"></i> 9 m road</span><span><i class="fa-solid fa-ruler-combined"></i> 1,650 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹56 Lakh</strong><button type="button" onclick="contactAgent('East Dombivli Home Site')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card land-card" data-purpose="rent" data-search="commercial land rabale">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1775234581224-cf44bed03e09?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Commercial land for rent in Rabale" loading="lazy">
+                    <span class="tag rent">FOR RENT</span>
+                    <button class="favorite" type="button" aria-label="Save Rabale commercial land" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Commercial land</p>
+                    <h3>Industrial Open Storage Yard</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Rabale MIDC</p>
+                    <div class="property-details"><span><i class="fa-solid fa-industry"></i> Industrial use</span><span><i class="fa-solid fa-truck"></i> Truck access</span><span><i class="fa-solid fa-ruler-combined"></i> 7,500 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹90,000/mo</strong><button type="button" onclick="contactAgent('Industrial Storage Yard in Rabale')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card land-card" data-purpose="buy" data-search="agricultural farmland pen">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1688278526565-5bb028024473?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Agricultural farmland for sale near Pen" loading="lazy">
+                    <span class="tag">FOR SALE</span>
+                    <button class="favorite" type="button" aria-label="Save Pen farmland" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Agricultural land</p>
+                    <h3>Orchard &amp; Cultivation Land</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Pen, Raigad</p>
+                    <div class="property-details"><span><i class="fa-solid fa-seedling"></i> Farm parcel</span><span><i class="fa-solid fa-water"></i> Water source</span><span><i class="fa-solid fa-ruler-combined"></i> 3 acres</span></div>
+                    <div class="property-bottom"><strong>₹1.25 Cr</strong><button type="button" onclick="contactAgent('Orchard and Cultivation Land in Pen')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card land-card" data-purpose="rent" data-search="residential plot ambernath">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1775931438151-3cbcfed16103?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Residential plot for rent in Ambernath" loading="lazy">
+                    <span class="tag rent">FOR RENT</span>
+                    <button class="favorite" type="button" aria-label="Save Ambernath residential plot" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Residential plot</p>
+                    <h3>Fenced Plot for Temporary Use</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Ambernath East</p>
+                    <div class="property-details"><span><i class="fa-solid fa-house"></i> Residential area</span><span><i class="fa-solid fa-shield-halved"></i> Fenced</span><span><i class="fa-solid fa-ruler-combined"></i> 2,400 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹22,000/mo</strong><button type="button" onclick="contactAgent('Fenced Plot in Ambernath')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card land-card" data-purpose="buy" data-search="commercial plot taloja">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1759663379485-bc4755df1c02?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Commercial plot for sale in Taloja" loading="lazy">
+                    <span class="tag">FOR SALE</span>
+                    <button class="favorite" type="button" aria-label="Save Taloja commercial plot" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Commercial plot</p>
+                    <h3>Industrial Development Parcel</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Taloja MIDC</p>
+                    <div class="property-details"><span><i class="fa-solid fa-industry"></i> Industrial zone</span><span><i class="fa-solid fa-road"></i> Highway access</span><span><i class="fa-solid fa-ruler-combined"></i> 9,000 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹2.2 Cr</strong><button type="button" onclick="contactAgent('Industrial Development Parcel in Taloja')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card land-card" data-purpose="rent" data-search="agricultural farmland shahapur">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1779043152010-3591365838aa?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Farmland for rent in Shahapur" loading="lazy">
+                    <span class="tag rent">FOR RENT</span>
+                    <button class="favorite" type="button" aria-label="Save Shahapur farmland" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Agricultural land</p>
+                    <h3>Large Seasonal Farm Lease</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Shahapur, Thane</p>
+                    <div class="property-details"><span><i class="fa-solid fa-seedling"></i> Farm use</span><span><i class="fa-solid fa-water"></i> Seasonal stream</span><span><i class="fa-solid fa-ruler-combined"></i> 4 acres</span></div>
+                    <div class="property-bottom"><strong>₹32,000/mo</strong><button type="button" onclick="contactAgent('Seasonal Farm Lease in Shahapur')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card land-card" data-purpose="buy" data-search="residential plot karjat">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1777460370374-b661418c97c1?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Residential plot for sale in Karjat" loading="lazy">
+                    <span class="tag">FOR SALE</span>
+                    <button class="favorite" type="button" aria-label="Save Karjat residential plot" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Residential plot</p>
+                    <h3>Hill-View Weekend Home Plot</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Neral, Karjat</p>
+                    <div class="property-details"><span><i class="fa-solid fa-mountain-sun"></i> Hill views</span><span><i class="fa-solid fa-file-circle-check"></i> Clear title</span><span><i class="fa-solid fa-ruler-combined"></i> 2,500 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹42 Lakh</strong><button type="button" onclick="contactAgent('Hill-View Weekend Home Plot in Karjat')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card land-card" data-purpose="rent" data-search="commercial land panvel">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1641410955547-6cbbcc4a845e?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Commercial land near an open access track in Panvel" loading="lazy">
+                    <span class="tag rent">FOR RENT</span>
+                    <button class="favorite" type="button" aria-label="Save Panvel commercial land" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Commercial land</p>
+                    <h3>Open Land for Fleet Parking</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Kalamboli, Panvel</p>
+                    <div class="property-details"><span><i class="fa-solid fa-truck"></i> Fleet parking</span><span><i class="fa-solid fa-road"></i> Highway nearby</span><span><i class="fa-solid fa-ruler-combined"></i> 15,000 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹1.5 Lakh/mo</strong><button type="button" onclick="contactAgent('Fleet Parking Land in Kalamboli')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card land-card" data-purpose="buy" data-search="agricultural farmland murbad">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1720173718367-f584a4432fd7?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Agricultural farmland for sale in Murbad" loading="lazy">
+                    <span class="tag">FOR SALE</span>
+                    <button class="favorite" type="button" aria-label="Save Murbad farmland" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Agricultural land</p>
+                    <h3>Green Valley Farm Parcel</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Murbad, Thane</p>
+                    <div class="property-details"><span><i class="fa-solid fa-tree"></i> Rural farmland</span><span><i class="fa-solid fa-road"></i> Village road</span><span><i class="fa-solid fa-ruler-combined"></i> 5 acres</span></div>
+                    <div class="property-bottom"><strong>₹1.1 Cr</strong><button type="button" onclick="contactAgent('Green Valley Farm Parcel in Murbad')">Contact</button></div>
+                </div>
+            </article>
+
+            <article class="property-card land-card" data-purpose="rent" data-search="residential plot ulhasnagar">
+                <div class="property-image">
+                    <img src="https://images.unsplash.com/photo-1786372585882-c39e12c15406?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="Residential plot for rent in Ulhasnagar" loading="lazy">
+                    <span class="tag rent">FOR RENT</span>
+                    <button class="favorite" type="button" aria-label="Save Ulhasnagar residential plot" onclick="favoriteProperty(this)"><i class="fa-regular fa-heart"></i></button>
+                </div>
+                <div class="property-info">
+                    <p class="property-type">Residential plot</p>
+                    <h3>Street-Front Plot for Lease</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Ulhasnagar 4</p>
+                    <div class="property-details"><span><i class="fa-solid fa-house"></i> Residential area</span><span><i class="fa-solid fa-road"></i> Street frontage</span><span><i class="fa-solid fa-ruler-combined"></i> 1,200 sq.ft</span></div>
+                    <div class="property-bottom"><strong>₹16,000/mo</strong><button type="button" onclick="contactAgent('Street-Front Plot in Ulhasnagar')">Contact</button></div>
+                </div>
+            </article>
+        </div>
+        <p id="landEmpty" class="commercial-empty" role="status">No land listings match your search.</p>
+    </section>
+
+    <section class="contact commercial-contact" id="contact">
+        <div>
+            <p class="small-title">LOOKING FOR LAND?</p>
+            <h2>Let's find the right ground for your <span>next step.</span></h2>
+            <p>Share your details and a Property Point land specialist will help you explore the listings.</p>
+        </div>
+        <form onsubmit="submitContact(event)">
+            <input type="text" id="contactName" placeholder="Your Name" required>
+            <input type="tel" id="contactPhone" placeholder="Phone Number" required>
+            <input type="hidden" id="propertyInterest" value="">
+            <select id="contactRequirement">
+                <option value="Buy">I'm looking to Buy</option>
+                <option value="Rent">I'm looking to Rent</option>
+                <option value="Sell">I want to Sell</option>
+            </select>
+            <p class="form-status" data-form-status role="status" aria-live="polite"></p>
+            <button type="submit" class="primary-btn">Send Enquiry</button>
+        </form>
+    </section>
+</main>
+
+<footer>
+    <div class="footer-logo"><img src="logo.svg" alt=""><span class="brand-name">Property <span>Point</span></span></div>
+    <p>© 2026 Property Point. All rights reserved.</p>
+    <a href="admin.html">Admin sign in</a>
+    <div class="socials">
+        <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+        <a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+    </div>
+<!-- SAVED FAVORITES MODAL -->
+<div id="favoritesModal" class="modal">
+    <div class="modal-content fav-modal-content">
+        <span class="close-btn" onclick="closeFavoritesModal()">&times;</span>
+        <h2><i class="fa-solid fa-heart" style="color: #e63946;"></i> Saved Properties</h2>
+        <div id="favoritesListGrid" class="favorites-grid"></div>
+        <p id="emptyFavoritesMsg" class="empty-fav-msg" style="display: none; padding: 20px 0; color: var(--gray); text-align: center;">You have not saved any properties yet.</p>
+    </div>
+</div>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+<script src="plots-land.js"></script>
+</body>
+</html>
