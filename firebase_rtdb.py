@@ -34,7 +34,7 @@ class RealtimeDatabaseStore:
             raise
 
     def health_check(self) -> None:
-        self._run(lambda: self.root_reference.child(".info/connected").get())
+        self._run(lambda: self.root_reference.get())
 
     def list_records(self, collection: str) -> list[dict[str, Any]]:
         records = self._run(lambda: self.root_reference.child(collection).get()) or {}

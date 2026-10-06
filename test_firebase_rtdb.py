@@ -47,6 +47,9 @@ class RealtimeDatabaseStoreTests(unittest.TestCase):
         }
         self.store = RealtimeDatabaseStore(MemoryReference(self.database))
 
+    def test_health_check_reads_database_root(self):
+        self.store.health_check()
+
     def test_list_and_get_records_include_database_key_as_id(self):
         records = self.store.list_records("property_submissions")
         self.assertEqual(
