@@ -2,11 +2,17 @@ services:
   - type: web
     name: property-point-backend
     runtime: python
-    buildCommand: python -m py_compile server.py
+    buildCommand: pip install -r requirements.txt && python -m py_compile server.py
     startCommand: python server.py
     envVars:
+      - key: PROPERTY_POINT_DATABASE
+        value: realtime_database
       - key: PROPERTY_POINT_HOST
         value: 0.0.0.0
+      - key: FIREBASE_DATABASE_URL
+        sync: false
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false
       - key: PROPERTY_POINT_CROSS_SITE_COOKIES
         value: "1"
       - key: PROPERTY_POINT_ADMIN_USERNAME

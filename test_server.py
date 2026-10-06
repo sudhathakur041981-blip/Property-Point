@@ -1,4 +1,5 @@
 import json
+import os
 import sqlite3
 import tempfile
 import threading
@@ -7,8 +8,12 @@ from contextlib import closing
 from http.client import HTTPConnection
 from http.server import ThreadingHTTPServer
 from pathlib import Path
+from unittest.mock import patch
 
+import server
+from firebase_rtdb import RealtimeDatabaseStore
 from server import PropertyPointHandler, initialize_database
+from test_firebase_rtdb import MemoryReference
 
 
 class BackendApiTests(unittest.TestCase):
@@ -113,6 +118,42 @@ class BackendApiTests(unittest.TestCase):
         status, response = self.request("GET", "/api/health")
         self.assertEqual(status, 200)
         self.assertEqual(response["data"]["status"], "healthy")
+
+    def test_firebase_backend_submission_approval_and_public_listing(self):
+        database = {}
+        store = RealtimeDatabaseStore(MemoryReference(database))
+        with (
+            patch.dict(os.environ, {"PROPERTY_POINT_DATABASE": "realtime_database"}),
+            patch.object(server, "initialize_firebase_store", return_value=store),
+        ):
+            status, submission = self.request(
+                "POST",
+                "/api/property-submissions",
+                self.property_payload(),
+            )
+            self.assertEqual(status, 201)
+            submission_id = submission["data"]["id"]
+            self.assertEqual(
+                database["property_submissions"][submission_id]["status"],
+                "pending",
+            )
+
+            status, approval = self.request(
+                "PATCH",
+                f"/api/admin/property-submissions/{submission_id}",
+                {"status": "approved"},
+                token="test-admin-token-0123456789abcdef",
+            )
+            self.assertEqual(status, 200)
+            self.assertEqual(approval["data"]["status"], "approved")
+
+            status, listings = self.request("GET", "/api/properties")
+            self.assertEqual(status, 200)
+            self.assertEqual(listings["data"]["total"], 1)
+            self.assertEqual(
+                listings["data"]["items"][0]["id"],
+                submission_id,
+            )
 
     def test_cors_preflight_allows_only_configured_origins(self):
         status, response, headers = self.request(

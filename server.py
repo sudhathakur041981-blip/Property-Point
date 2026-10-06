@@ -22,6 +22,12 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
+from firebase_rtdb import (
+    FirebaseConfigurationError,
+    FirebaseStoreError,
+    initialize_store as initialize_firebase_store,
+)
+
 
 ROOT = Path(__file__).resolve().parent
 DATABASE_PATH = Path(
@@ -50,6 +56,8 @@ VALID_BATHROOMS = {"", "1 Bath", "2 Baths", "3 Baths", "4 Baths", "5 Baths+"}
 VALID_ENQUIRY_REQUIREMENTS = {"Buy", "Rent", "Sell"}
 PHONE_PATTERN = re.compile(r"^\+?[0-9][0-9 ()-]{7,19}$")
 LOG = logging.getLogger("property_point")
+FIREBASE_PROPERTY_COLLECTION = "property_submissions"
+FIREBASE_ENQUIRY_COLLECTION = "enquiries"
 
 # ==============================================================================
 # GEOSPATIAL & LOCALITY BENCHMARKS (MUMBAI MMR)
@@ -337,6 +345,67 @@ def connect_database(database_path: Path = DATABASE_PATH) -> sqlite3.Connection:
     connection.execute("PRAGMA foreign_keys = ON")
     connection.execute("PRAGMA busy_timeout = 10000")
     return connection
+
+
+def uses_realtime_database() -> bool:
+    backend = os.environ.get("PROPERTY_POINT_DATABASE", "sqlite").strip().lower()
+    if backend not in {"sqlite", "realtime_database"}:
+        raise FirebaseConfigurationError(
+            "PROPERTY_POINT_DATABASE must be 'sqlite' or 'realtime_database'."
+        )
+    return backend == "realtime_database"
+
+
+def firebase_property_document(submission: dict[str, object]) -> dict[str, object]:
+    record = {
+        key: value
+        for key, value in submission.items()
+        if key not in {"name", "phone"}
+    }
+    return {
+        **record,
+        "owner_name": submission["name"],
+        "owner_phone": submission["phone"],
+        "status": "pending",
+        "reviewed_at": None,
+        "additional_images": [],
+        "is_featured": False,
+        "is_verified": False,
+        "age_years": 0,
+        "amenities": json.loads(str(submission.get("amenities") or "[]")),
+    }
+
+
+def firebase_enquiry_document(enquiry: dict[str, object]) -> dict[str, object]:
+    return {
+        **enquiry,
+        "property_interest": enquiry.get("property_interest") or "",
+        "status": "new",
+    }
+
+
+def normalize_firebase_property(row: dict[str, object]) -> dict[str, object]:
+    normalized = dict(row)
+    normalized.setdefault("description", "")
+    normalized.setdefault("bedrooms", None)
+    normalized.setdefault("bathrooms", None)
+    normalized.setdefault("image_url", "")
+    normalized.setdefault("additional_images", [])
+    normalized.setdefault("latitude", 0.0)
+    normalized.setdefault("longitude", 0.0)
+    normalized.setdefault("amenities", [])
+    normalized.setdefault("is_featured", False)
+    normalized.setdefault("is_verified", False)
+    normalized.setdefault("furnishing", "Semi-Furnished")
+    normalized.setdefault("age_years", 0)
+    normalized.setdefault("status", "pending")
+    if isinstance(normalized["amenities"], str):
+        normalized["amenities"] = json.loads(normalized["amenities"] or "[]")
+    if isinstance(normalized["additional_images"], str):
+        normalized["additional_images"] = json.loads(
+            normalized["additional_images"] or "[]"
+        )
+    return normalized
 
 
 def ensure_extended_columns(connection: sqlite3.Connection) -> None:
@@ -1218,8 +1287,11 @@ class PropertyPointHandler(SimpleHTTPRequestHandler):
 
         try:
             if parsed.path == "/api/health":
-                with closing(connect_database(self.database_path)) as connection:
-                    connection.execute("SELECT 1").fetchone()
+                if uses_realtime_database():
+                    initialize_firebase_store().health_check()
+                else:
+                    with closing(connect_database(self.database_path)) as connection:
+                        connection.execute("SELECT 1").fetchone()
                 self.send_json(
                     HTTPStatus.OK,
                     {"ok": True, "data": {"status": "healthy"}},
@@ -1272,6 +1344,18 @@ class PropertyPointHandler(SimpleHTTPRequestHandler):
             self.send_api_error(error)
         except sqlite3.Error:
             LOG.exception("Database request failed for %s", parsed.path)
+            self.send_json(
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                {
+                    "ok": False,
+                    "error": {
+                        "code": "database_error",
+                        "message": "The request could not be completed.",
+                    },
+                },
+            )
+        except FirebaseStoreError:
+            LOG.exception("Firebase request failed for %s", parsed.path)
             self.send_json(
                 HTTPStatus.INTERNAL_SERVER_ERROR,
                 {
@@ -1373,6 +1457,18 @@ class PropertyPointHandler(SimpleHTTPRequestHandler):
                     },
                 },
             )
+        except FirebaseStoreError:
+            LOG.exception("Firebase insert failed for %s", parsed.path)
+            self.send_json(
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                {
+                    "ok": False,
+                    "error": {
+                        "code": "database_error",
+                        "message": "Your submission could not be saved. Please try again.",
+                    },
+                },
+            )
 
     def do_PATCH(self) -> None:
         parsed = urlparse(self.path)
@@ -1407,6 +1503,18 @@ class PropertyPointHandler(SimpleHTTPRequestHandler):
                     "error": {
                         "code": "database_error",
                         "message": "The request could not be completed.",
+                    },
+                },
+            )
+        except FirebaseStoreError:
+            LOG.exception("Firebase update failed for %s", parsed.path)
+            self.send_json(
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                {
+                    "ok": False,
+                    "error": {
+                        "code": "database_error",
+                        "message": "The property status could not be updated.",
                     },
                 },
             )
@@ -1471,24 +1579,31 @@ class PropertyPointHandler(SimpleHTTPRequestHandler):
     # ==========================================================================
 
     def create_property_submission(self, submission: dict[str, object]) -> None:
-        with closing(connect_database(self.database_path)) as connection:
-            connection.execute(
-                """
-                INSERT INTO property_submissions (
-                    id, owner_name, owner_phone, purpose, location, title,
-                    description, property_type, bedrooms, bathrooms, area_sqft,
-                    expected_price_paise, created_at, image_url, latitude, longitude,
-                    amenities, furnishing
-                ) VALUES (
-                    :id, :name, :phone, :purpose, :location, :title,
-                    :description, :property_type, :bedrooms, :bathrooms,
-                    :area_sqft, :expected_price_paise, :created_at, :image_url,
-                    :latitude, :longitude, :amenities, :furnishing
-                )
-                """,
-                submission,
+        if uses_realtime_database():
+            initialize_firebase_store().set_record(
+                FIREBASE_PROPERTY_COLLECTION,
+                str(submission["id"]),
+                firebase_property_document(submission),
             )
-            connection.commit()
+        else:
+            with closing(connect_database(self.database_path)) as connection:
+                connection.execute(
+                    """
+                    INSERT INTO property_submissions (
+                        id, owner_name, owner_phone, purpose, location, title,
+                        description, property_type, bedrooms, bathrooms, area_sqft,
+                        expected_price_paise, created_at, image_url, latitude, longitude,
+                        amenities, furnishing
+                    ) VALUES (
+                        :id, :name, :phone, :purpose, :location, :title,
+                        :description, :property_type, :bedrooms, :bathrooms,
+                        :area_sqft, :expected_price_paise, :created_at, :image_url,
+                        :latitude, :longitude, :amenities, :furnishing
+                    )
+                    """,
+                    submission,
+                )
+                connection.commit()
         self.send_json(
             HTTPStatus.CREATED,
             {
@@ -1502,20 +1617,27 @@ class PropertyPointHandler(SimpleHTTPRequestHandler):
         )
 
     def create_enquiry(self, enquiry: dict[str, object]) -> None:
-        with closing(connect_database(self.database_path)) as connection:
-            connection.execute(
-                """
-                INSERT INTO enquiries (
-                    id, name, phone, requirement, property_interest,
-                    lead_score, lead_classification, created_at
-                ) VALUES (
-                    :id, :name, :phone, :requirement, :property_interest,
-                    :lead_score, :lead_classification, :created_at
-                )
-                """,
-                enquiry,
+        if uses_realtime_database():
+            initialize_firebase_store().set_record(
+                FIREBASE_ENQUIRY_COLLECTION,
+                str(enquiry["id"]),
+                firebase_enquiry_document(enquiry),
             )
-            connection.commit()
+        else:
+            with closing(connect_database(self.database_path)) as connection:
+                connection.execute(
+                    """
+                    INSERT INTO enquiries (
+                        id, name, phone, requirement, property_interest,
+                        lead_score, lead_classification, created_at
+                    ) VALUES (
+                        :id, :name, :phone, :requirement, :property_interest,
+                        :lead_score, :lead_classification, :created_at
+                    )
+                    """,
+                    enquiry,
+                )
+                connection.commit()
         self.send_json(
             HTTPStatus.CREATED,
             {
@@ -1581,32 +1703,61 @@ class PropertyPointHandler(SimpleHTTPRequestHandler):
 
         where_clause = " AND ".join(clauses)
 
-        with closing(connect_database(self.database_path)) as connection:
-            total = connection.execute(
-                f"SELECT COUNT(*) FROM property_submissions WHERE {where_clause}",
-                parameters,
-            ).fetchone()[0]
+        if uses_realtime_database():
+            rows = [
+                normalize_firebase_property(record)
+                for record in initialize_firebase_store().list_records(
+                    FIREBASE_PROPERTY_COLLECTION
+                )
+                if record.get("status") == "approved"
+                and (not purpose or record.get("purpose") == purpose)
+                and (not property_type or record.get("property_type") == property_type)
+                and (not location or location.casefold() in str(record.get("location", "")).casefold())
+                and (
+                    not search_query
+                    or any(
+                        search_query.casefold() in str(record.get(field, "")).casefold()
+                        for field in ("title", "description", "location")
+                    )
+                )
+            ]
+            total = len(rows)
+            rows.sort(
+                key=lambda row: (
+                    bool(row.get("is_featured")),
+                    str(row.get("created_at") or ""),
+                    str(row.get("id") or ""),
+                ),
+                reverse=True,
+            )
+        else:
+            with closing(connect_database(self.database_path)) as connection:
+                total = connection.execute(
+                    f"SELECT COUNT(*) FROM property_submissions WHERE {where_clause}",
+                    parameters,
+                ).fetchone()[0]
 
-            rows = connection.execute(
-                f"""
-                SELECT id, purpose, location, title, description, property_type,
-                       bedrooms, bathrooms, area_sqft, expected_price_paise, created_at,
-                       image_url, latitude, longitude, amenities, is_featured,
-                       is_verified, furnishing, age_years
-                FROM property_submissions
-                WHERE {where_clause}
-                ORDER BY is_featured DESC, created_at DESC, id DESC
-                """,
-                parameters,
-            ).fetchall()
+                rows = connection.execute(
+                    f"""
+                    SELECT id, purpose, location, title, description, property_type,
+                           bedrooms, bathrooms, area_sqft, expected_price_paise, created_at,
+                           image_url, latitude, longitude, amenities, is_featured,
+                           is_verified, furnishing, age_years
+                    FROM property_submissions
+                    WHERE {where_clause}
+                    ORDER BY is_featured DESC, created_at DESC, id DESC
+                    """,
+                    parameters,
+                ).fetchall()
 
         items = []
         for row in rows:
-            amenities_list = []
-            try:
-                amenities_list = json.loads(row["amenities"] or "[]")
-            except Exception:
-                pass
+            amenities_value = row["amenities"] or []
+            amenities_list = (
+                json.loads(amenities_value)
+                if isinstance(amenities_value, str)
+                else amenities_value
+            )
 
             price_val = row["expected_price_paise"] / 100
             area_val = row["area_sqft"]
@@ -1690,18 +1841,27 @@ class PropertyPointHandler(SimpleHTTPRequestHandler):
         )
 
     def get_single_property(self, property_id: str) -> None:
-        with closing(connect_database(self.database_path)) as connection:
-            row = connection.execute(
-                """
-                SELECT id, purpose, location, title, description, property_type,
-                       bedrooms, bathrooms, area_sqft, expected_price_paise, created_at,
-                       image_url, additional_images, latitude, longitude, amenities,
-                       is_featured, is_verified, furnishing, age_years
-                FROM property_submissions
-                WHERE id = ? AND status = 'approved'
-                """,
-                (property_id,),
-            ).fetchone()
+        if uses_realtime_database():
+            row = initialize_firebase_store().get_record(
+                FIREBASE_PROPERTY_COLLECTION, property_id
+            )
+            if row is not None:
+                row = normalize_firebase_property(row)
+                if row.get("status") != "approved":
+                    row = None
+        else:
+            with closing(connect_database(self.database_path)) as connection:
+                row = connection.execute(
+                    """
+                    SELECT id, purpose, location, title, description, property_type,
+                           bedrooms, bathrooms, area_sqft, expected_price_paise, created_at,
+                           image_url, additional_images, latitude, longitude, amenities,
+                           is_featured, is_verified, furnishing, age_years
+                    FROM property_submissions
+                    WHERE id = ? AND status = 'approved'
+                    """,
+                    (property_id,),
+                ).fetchone()
 
         if row is None:
             raise ApiError(
@@ -1710,11 +1870,12 @@ class PropertyPointHandler(SimpleHTTPRequestHandler):
                 "The requested property listing was not found.",
             )
 
-        amenities_list = []
-        try:
-            amenities_list = json.loads(row["amenities"] or "[]")
-        except Exception:
-            pass
+        amenities_value = row["amenities"] or []
+        amenities_list = (
+            json.loads(amenities_value)
+            if isinstance(amenities_value, str)
+            else amenities_value
+        )
 
         price_val = row["expected_price_paise"] / 100
         area_val = row["area_sqft"]
@@ -1762,42 +1923,62 @@ class PropertyPointHandler(SimpleHTTPRequestHandler):
 
     def get_similar_properties_endpoint(self, property_id: str) -> None:
         """Algorithm 2: Vector-based Cosine Similarity Recommendation."""
-        with closing(connect_database(self.database_path)) as connection:
-            target_row = connection.execute(
-                """
-                SELECT id, purpose, location, title, description, property_type,
-                       bedrooms, bathrooms, area_sqft, expected_price_paise
-                FROM property_submissions
-                WHERE id = ? AND status = 'approved'
-                """,
-                (property_id,),
-            ).fetchone()
-
+        if uses_realtime_database():
+            all_rows = [
+                normalize_firebase_property(record)
+                for record in initialize_firebase_store().list_records(
+                    FIREBASE_PROPERTY_COLLECTION
+                )
+                if record.get("status") == "approved"
+            ]
+            target_row = next(
+                (row for row in all_rows if row["id"] == property_id), None
+            )
             if not target_row:
                 raise ApiError(HTTPStatus.NOT_FOUND, "not_found", "Property not found.")
+            other_rows = [
+                row
+                for row in all_rows
+                if row["id"] != property_id
+                and row["purpose"] == target_row["purpose"]
+            ][:50]
+        else:
+            with closing(connect_database(self.database_path)) as connection:
+                target_row = connection.execute(
+                    """
+                    SELECT id, purpose, location, title, description, property_type,
+                           bedrooms, bathrooms, area_sqft, expected_price_paise
+                    FROM property_submissions
+                    WHERE id = ? AND status = 'approved'
+                    """,
+                    (property_id,),
+                ).fetchone()
 
-            target_dict = {
-                "id": target_row["id"],
-                "purpose": target_row["purpose"],
-                "location": target_row["location"],
-                "areaSqFt": target_row["area_sqft"],
-                "expectedPrice": target_row["expected_price_paise"] / 100,
-                "bedrooms": target_row["bedrooms"],
-                "propertyType": target_row["property_type"],
-            }
-            target_vec = property_feature_vector(target_dict)
+                if not target_row:
+                    raise ApiError(HTTPStatus.NOT_FOUND, "not_found", "Property not found.")
 
-            other_rows = connection.execute(
-                """
-                SELECT id, purpose, location, title, description, property_type,
-                       bedrooms, bathrooms, area_sqft, expected_price_paise, image_url,
-                       amenities
-                FROM property_submissions
-                WHERE id != ? AND status = 'approved' AND purpose = ?
-                LIMIT 50
-                """,
-                (property_id, target_row["purpose"]),
-            ).fetchall()
+                other_rows = connection.execute(
+                    """
+                    SELECT id, purpose, location, title, description, property_type,
+                           bedrooms, bathrooms, area_sqft, expected_price_paise, image_url,
+                           amenities
+                    FROM property_submissions
+                    WHERE id != ? AND status = 'approved' AND purpose = ?
+                    LIMIT 50
+                    """,
+                    (property_id, target_row["purpose"]),
+                ).fetchall()
+
+        target_dict = {
+            "id": target_row["id"],
+            "purpose": target_row["purpose"],
+            "location": target_row["location"],
+            "areaSqFt": target_row["area_sqft"],
+            "expectedPrice": target_row["expected_price_paise"] / 100,
+            "bedrooms": target_row["bedrooms"],
+            "propertyType": target_row["property_type"],
+        }
+        target_vec = property_feature_vector(target_dict)
 
         scored = []
         for r in other_rows:
@@ -1862,25 +2043,41 @@ class PropertyPointHandler(SimpleHTTPRequestHandler):
         offset = self.query_integer(
             query, "offset", default=0, minimum=0, maximum=1_000_000
         )
-        where_clause = "" if status == "all" else "WHERE status = ?"
-        parameters: list[object] = [] if status == "all" else [status]
-        with closing(connect_database(self.database_path)) as connection:
-            total = connection.execute(
-                f"SELECT COUNT(*) FROM property_submissions {where_clause}",
-                parameters,
-            ).fetchone()[0]
-            rows = connection.execute(
-                f"""
-                SELECT id, owner_name, owner_phone, purpose, location, title,
-                       description, property_type, bedrooms, bathrooms, area_sqft,
-                       expected_price_paise, status, created_at, reviewed_at
-                FROM property_submissions
-                {where_clause}
-                ORDER BY created_at DESC, id DESC
-                LIMIT ? OFFSET ?
-                """,
-                [*parameters, limit, offset],
-            ).fetchall()
+        if uses_realtime_database():
+            rows = initialize_firebase_store().list_records(
+                FIREBASE_PROPERTY_COLLECTION
+            )
+            if status != "all":
+                rows = [row for row in rows if row.get("status") == status]
+            rows.sort(
+                key=lambda row: (
+                    str(row.get("created_at") or ""),
+                    str(row.get("id") or ""),
+                ),
+                reverse=True,
+            )
+            total = len(rows)
+            rows = rows[offset : offset + limit]
+        else:
+            where_clause = "" if status == "all" else "WHERE status = ?"
+            parameters: list[object] = [] if status == "all" else [status]
+            with closing(connect_database(self.database_path)) as connection:
+                total = connection.execute(
+                    f"SELECT COUNT(*) FROM property_submissions {where_clause}",
+                    parameters,
+                ).fetchone()[0]
+                rows = connection.execute(
+                    f"""
+                    SELECT id, owner_name, owner_phone, purpose, location, title,
+                           description, property_type, bedrooms, bathrooms, area_sqft,
+                           expected_price_paise, status, created_at, reviewed_at
+                    FROM property_submissions
+                    {where_clause}
+                    ORDER BY created_at DESC, id DESC
+                    LIMIT ? OFFSET ?
+                    """,
+                    [*parameters, limit, offset],
+                ).fetchall()
         items = [
             {
                 "id": row["id"],
@@ -1919,18 +2116,30 @@ class PropertyPointHandler(SimpleHTTPRequestHandler):
         offset = self.query_integer(
             query, "offset", default=0, minimum=0, maximum=1_000_000
         )
-        with closing(connect_database(self.database_path)) as connection:
-            total = connection.execute("SELECT COUNT(*) FROM enquiries").fetchone()[0]
-            rows = connection.execute(
-                """
-                SELECT id, name, phone, requirement, property_interest, status,
-                       lead_score, lead_classification, created_at
-                FROM enquiries
-                ORDER BY created_at DESC, id DESC
-                LIMIT ? OFFSET ?
-                """,
-                (limit, offset),
-            ).fetchall()
+        if uses_realtime_database():
+            rows = initialize_firebase_store().list_records(FIREBASE_ENQUIRY_COLLECTION)
+            rows.sort(
+                key=lambda row: (
+                    str(row.get("created_at") or ""),
+                    str(row.get("id") or ""),
+                ),
+                reverse=True,
+            )
+            total = len(rows)
+            rows = rows[offset : offset + limit]
+        else:
+            with closing(connect_database(self.database_path)) as connection:
+                total = connection.execute("SELECT COUNT(*) FROM enquiries").fetchone()[0]
+                rows = connection.execute(
+                    """
+                    SELECT id, name, phone, requirement, property_interest, status,
+                           lead_score, lead_classification, created_at
+                    FROM enquiries
+                    ORDER BY created_at DESC, id DESC
+                    LIMIT ? OFFSET ?
+                    """,
+                    (limit, offset),
+                ).fetchall()
         items = [
             {
                 "id": row["id"],
@@ -1960,17 +2169,25 @@ class PropertyPointHandler(SimpleHTTPRequestHandler):
 
     def update_property_submission(self, submission_id: str, status: str) -> None:
         reviewed_at = utc_now()
-        with closing(connect_database(self.database_path)) as connection:
-            cursor = connection.execute(
-                """
-                UPDATE property_submissions
-                SET status = ?, reviewed_at = ?
-                WHERE id = ? AND status = 'pending'
-                """,
-                (status, reviewed_at, submission_id),
+        if uses_realtime_database():
+            updated = initialize_firebase_store().update_pending_record(
+                FIREBASE_PROPERTY_COLLECTION,
+                submission_id,
+                {"status": status, "reviewed_at": reviewed_at},
             )
-            connection.commit()
-        if cursor.rowcount == 0:
+        else:
+            with closing(connect_database(self.database_path)) as connection:
+                cursor = connection.execute(
+                    """
+                    UPDATE property_submissions
+                    SET status = ?, reviewed_at = ?
+                    WHERE id = ? AND status = 'pending'
+                    """,
+                    (status, reviewed_at, submission_id),
+                )
+                connection.commit()
+                updated = cursor.rowcount != 0
+        if not updated:
             raise ApiError(
                 HTTPStatus.NOT_FOUND,
                 "submission_not_found",
@@ -2025,9 +2242,13 @@ def main() -> None:
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
-    initialize_database()
-    with closing(connect_database()) as connection:
-        seed_default_properties_if_empty(connection)
+    if uses_realtime_database():
+        initialize_firebase_store().health_check()
+        LOG.info("Using Firebase Realtime Database")
+    else:
+        initialize_database()
+        with closing(connect_database()) as connection:
+            seed_default_properties_if_empty(connection)
 
     host = os.environ.get("PROPERTY_POINT_HOST", "127.0.0.1")
     port = int(
@@ -2035,7 +2256,10 @@ def main() -> None:
     )
     server = PropertyPointServer((host, port), PropertyPointHandler)
     print(f"Property Point is running at http://{host}:{port}/")
-    print(f"SQLite database: {DATABASE_PATH}")
+    if uses_realtime_database():
+        print("Database: Firebase Realtime Database")
+    else:
+        print(f"SQLite database: {DATABASE_PATH}")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

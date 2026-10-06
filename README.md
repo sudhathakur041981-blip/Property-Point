@@ -2,9 +2,10 @@
 
 ## Run locally
 
-Use Python 3.10 or newer; the backend uses only the Python standard library and SQLite.
+Use Python 3.10 or newer. SQLite is the default for local development and tests. Install the Firebase Admin SDK when connecting the backend to Firebase:
 
 ```powershell
+python -m pip install -r requirements.txt
 python server.py
 ```
 
@@ -17,6 +18,9 @@ Optional settings:
 | `PROPERTY_POINT_HOST` | `127.0.0.1` | Bind address. Keep localhost for local development. |
 | `PROPERTY_POINT_PORT` | `8000` | HTTP port. |
 | `PROPERTY_POINT_DB` | `~/.property_point/property_point.sqlite3` | SQLite database path. |
+| `PROPERTY_POINT_DATABASE` | `sqlite` | Set to `realtime_database` to use Firebase Realtime Database. |
+| `FIREBASE_DATABASE_URL` | unset | Firebase Realtime Database URL from the Firebase console. |
+| `FIREBASE_SERVICE_ACCOUNT_JSON` | unset | Service-account JSON used by the backend Admin SDK. If omitted, Google Application Default Credentials are used. |
 | `PROPERTY_POINT_ADMIN_TOKEN` | unset | Enables staff-only API routes when set. |
 | `PROPERTY_POINT_ADMIN_USERNAME` | `admin` | Username accepted by the admin login page. |
 | `PROPERTY_POINT_COOKIE_SECURE` | unset | Set to `1` when serving over HTTPS so the admin session cookie is Secure. |
@@ -117,6 +121,32 @@ python -m unittest -v
 ```
 
 The integration tests use a temporary SQLite database and do not modify the live application database.
+
+## Firebase Realtime Database
+
+The backend—not the browser—connects to Firebase using the Firebase Admin SDK. Keep the Realtime Database rules private; the service account bypasses these rules on the trusted backend. The app stores records under `/property_submissions/{id}` and `/enquiries/{id}`. Property/enquiry submissions, public approved-listing reads, and protected admin review use the same API as SQLite. The SQLite backend remains the default for local development and automated tests.
+
+### Connect Render to Firebase
+
+1. In Firebase Console, create or select a project. Under **Build → Realtime Database**, create a database and copy its database URL. Under **Project settings → Service accounts**, generate a private key for the Firebase Admin SDK.
+2. In Render, set `PROPERTY_POINT_DATABASE=realtime_database` and `FIREBASE_DATABASE_URL` to the database URL. Add `FIREBASE_SERVICE_ACCOUNT_JSON` with the complete service-account JSON contents as a secret environment variable. Do not commit the key, put it in `config.js`, or share it in chat. Alternatively, configure Google Application Default Credentials on an environment that supports them.
+3. Keep the database client rules closed to public access. The Render backend uses the Admin SDK; the Vercel browser frontend must not access Firebase directly. The app's regular settings still apply, including `PROPERTY_POINT_ALLOWED_ORIGINS`, the admin token, and cross-site cookies.
+4. Redeploy the Render service and check `/api/health`. A missing/invalid credential, URL, or Firebase connection prevents a successful health check; inspect Render logs for the service error.
+
+### Copy existing SQLite data to Firebase
+
+The migration copies both properties and enquiries and leaves the SQLite source untouched. It is a dry run unless `--apply` is supplied. Download a replacement service-account JSON key to a private location on your computer, then set the Firebase values in PowerShell without displaying or adding the key to source control:
+
+```powershell
+$env:FIREBASE_DATABASE_URL = "YOUR_REALTIME_DATABASE_URL"
+$env:FIREBASE_SERVICE_ACCOUNT_JSON = Get-Content "C:\private\firebase-service-account.json" -Raw
+python migrate_sqlite_to_firebase.py
+python migrate_sqlite_to_firebase.py --apply
+```
+
+The default source is `~/.property_point/property_point.sqlite3`. For another SQLite file, pass `--sqlite "C:\path\to\property_point.sqlite3"`. By default the migrator stops without writing if any source record ID already exists in Firebase; `--overwrite` explicitly allows replacing only matching IDs. Back up the SQLite file and verify records in Firebase and through the app before switching Render to `PROPERTY_POINT_DATABASE=realtime_database`.
+
+If a service-account private key was accidentally shared or committed, revoke it immediately in Google Cloud Console → **IAM & Admin → Service Accounts → Keys**, then create a replacement. Do not reuse an exposed key.
 
 ## Production note
 
