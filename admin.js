@@ -29,7 +29,9 @@ async function adminApi(path, { method = "GET", payload, csrf = false } = {}) {
             body: payload === undefined ? undefined : JSON.stringify(payload)
         });
     } catch {
-        throw new Error("Can't reach the backend. Start it with `python server.py`.");
+        throw new Error(
+            "Can't reach the backend. Check that it is running and that its CORS allowlist includes this site's origin."
+        );
     }
 
     let result;
