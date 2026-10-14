@@ -137,6 +137,21 @@ class BackendApiTests(unittest.TestCase):
                 database["property_submissions"][submission_id]["status"],
                 "pending",
             )
+            database["property_submissions"][submission_id].pop(
+                "reviewed_at",
+                None,
+            )
+
+            status, admin_submissions = self.request(
+                "GET",
+                "/api/admin/property-submissions?status=pending",
+                token="test-admin-token-0123456789abcdef",
+            )
+            self.assertEqual(status, 200)
+            self.assertEqual(admin_submissions["data"]["total"], 1)
+            self.assertIsNone(
+                admin_submissions["data"]["items"][0]["reviewedAt"]
+            )
 
             status, approval = self.request(
                 "PATCH",

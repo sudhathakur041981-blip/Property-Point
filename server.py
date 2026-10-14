@@ -399,6 +399,7 @@ def normalize_firebase_property(row: dict[str, object]) -> dict[str, object]:
     normalized.setdefault("furnishing", "Semi-Furnished")
     normalized.setdefault("age_years", 0)
     normalized.setdefault("status", "pending")
+    normalized.setdefault("reviewed_at", None)
     if isinstance(normalized["amenities"], str):
         normalized["amenities"] = json.loads(normalized["amenities"] or "[]")
     if isinstance(normalized["additional_images"], str):
@@ -2044,9 +2045,12 @@ class PropertyPointHandler(SimpleHTTPRequestHandler):
             query, "offset", default=0, minimum=0, maximum=1_000_000
         )
         if uses_realtime_database():
-            rows = initialize_firebase_store().list_records(
-                FIREBASE_PROPERTY_COLLECTION
-            )
+            rows = [
+                normalize_firebase_property(row)
+                for row in initialize_firebase_store().list_records(
+                    FIREBASE_PROPERTY_COLLECTION
+                )
+            ]
             if status != "all":
                 rows = [row for row in rows if row.get("status") == status]
             rows.sort(
